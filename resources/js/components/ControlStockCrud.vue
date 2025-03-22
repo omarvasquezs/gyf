@@ -107,8 +107,12 @@
             <button @click="editItem(item)" class="btn btn-warning btn-sm me-2" title="Editar">
               <i class="fas fa-pencil-alt"></i>
             </button>
-            <button @click="confirmDelete(item.id)" class="btn btn-danger btn-sm" title="Eliminar">
+            <button @click="confirmDelete(item.id)" class="btn btn-danger btn-sm me-2" title="Eliminar">
               <i class="fas fa-trash-alt"></i>
+            </button>
+            <button @click="agregarProducto(item)" class="btn btn-success btn-sm" title="Agregar al carrito"
+              :disabled="item.num_stock <= 0">
+              <i class="fas fa-cart-plus"></i>
             </button>
           </td>
         </tr>
@@ -459,6 +463,86 @@
         </div>
       </div>
     </div>
+
+    <!-- Shopping Cart Icon Button -->
+    <button @click="openCart" class="btn-cart-icon">
+      <i class="fas fa-shopping-cart"></i>
+      <span v-if="cartItemCount > 0" class="cart-item-count">{{ cartItemCount }}</span>
+    </button>
+
+    <!-- Cart Modal with Transition -->
+    <transition name="fade">
+      <div v-if="showCart" class="modal d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Carrito</h5>
+              <button type="button" class="btn-close" aria-label="Close" @click="closeCart"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="nombres" class="form-label">Nombres <span class="text-danger">*</span></label>
+                <input type="text" v-model="nombres" class="form-control" id="nombres" placeholder="Ingrese nombres">
+              </div>
+              <div class="mb-3">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="text" v-model="telefono" class="form-control" id="telefono" placeholder="Ingrese teléfono">
+              </div>
+              <div class="mb-3">
+                <label for="correo" class="form-label">Correo</label>
+                <input type="email" v-model="correo" class="form-control" id="correo" placeholder="Ingrese correo">
+              </div>
+              
+              <!-- Total Amount Display -->
+              <div class="mb-3">
+                <div class="alert alert-info d-flex justify-content-between align-items-center">
+                  <span><strong>Total:</strong> S/. {{ calculateTotal.toFixed(2) }}</span>
+                  <span><strong>Items:</strong> {{ cartItemCount }}</span>
+                </div>
+              </div>
+              
+              <table v-if="cart.length" class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" @change="toggleSelectAll" :checked="isAllSelected"></th>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Precio Total</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in cart" :key="item.id">
+                    <td><input type="checkbox" v-model="selectedItems" :value="item.id"></td>
+                    <td>{{ item.descripcion || 'Sin descripción' }}</td>
+                    <td>S/. {{ item.precio }}</td>
+                    <td>
+                      <input type="number" v-model.number="item.quantity" min="1" class="form-control"
+                        style="width:100px;" @change="updateQuantity(index, $event)">
+                    </td>
+                    <td>S/. {{ (item.precio * item.quantity).toFixed(2) }}</td>
+                    <td>
+                      <div class="text-center">
+                          <button @click="removerProducto(index)" class="btn btn-danger btn-sm" title="Eliminar">
+                          <i class="fas fa-trash"></i>
+                          </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p v-else class="mb-0">No hay productos</p>
+            </div>
+            <div class="modal-footer">
+              <button v-if="selectedItems.length" type="button" class="btn btn-danger" @click="removerSeleccionados">Eliminar seleccionados</button>
+              <button type="button" class="btn btn-primary" @click="procesarCart" v-if="selectedItems.length">Procesar</button>
+              <button type="button" class="btn btn-secondary" @click="closeCart">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -528,7 +612,27 @@ export default {
       isEditingMaterial: false,
       editingMaterialId: null,
       materialFormErrors: [],
+      // Cart-related data
+      cart: [],
+      showCart: false,
+      selectedItems: [],
+      recentlyAddedProductId: null,
+      nombres: '',
+      telefono: '',
+      correo: ''
     };
+  },
+  computed: {
+    // Add cart-related computed properties
+    cartItemCount() {
+      return this.cart.reduce((total, item) => total + item.quantity, 0);
+    },
+    isAllSelected() {
+      return this.cart.length && this.selectedItems.length === this.cart.length;
+    },
+    calculateTotal() {
+      return this.cart.reduce((total, item) => total + (item.quantity * item.precio), 0);
+    }
   },
   methods: {
     fetchItems(url = '/api/stock') {
@@ -726,6 +830,14 @@ export default {
       this.alertMessage = '';
     },
     goBack() {
+      if (this.cart.length > 0) {
+        if (!window.confirm('Hay items en el carrito de compras, estas seguro de irse?, se borraran si se va.')) {
+          return;
+        }
+        // Clear cart if confirmed
+        this.cart = [];
+        this.selectedItems = [];
+      }
       window.history.back();
     },
     getTipoProductoLabel(tipo) {
@@ -1027,6 +1139,160 @@ export default {
         }
       }
     },
+    // Cart-related methods
+    agregarProducto(producto) {
+      // Check if the product is already in the cart
+      const existingProduct = this.cart.find(item => item.id === producto.id);
+
+      if (existingProduct) {
+        // If the product exists, update the quantity
+        existingProduct.quantity += 1;
+      } else {
+        // If the product doesn't exist, add it to the cart with quantity 1
+        this.cart.push({ ...producto, quantity: 1 });
+      }
+
+      // Set recently added product ID for animation
+      this.recentlyAddedProductId = producto.id;
+      
+      // Show success message
+      this.alertMessage = `"${producto.descripcion || 'Producto'}" agregado al carrito`;
+      setTimeout(() => {
+        this.recentlyAddedProductId = null;
+        this.alertMessage = '';
+      }, 1500);
+    },
+    
+    removerProducto(index) {
+      this.cart.splice(index, 1);
+    },
+    
+    updateQuantity(index, event) {
+      const newQuantity = parseInt(event.target.value, 10);
+      if (newQuantity > 0) {
+        this.cart[index].quantity = newQuantity;
+      } else {
+        // Remove the item if the quantity is set to 0 or less
+        this.cart.splice(index, 1);
+      }
+    },
+    
+    closeCart() {
+      this.showCart = false;
+    },
+    
+    openCart() {
+      this.showCart = true;
+    },
+    
+    toggleSelectAll(event) {
+      if (event.target.checked) {
+        this.selectedItems = this.cart.map(item => item.id);
+      } else {
+        this.selectedItems = [];
+      }
+    },
+    
+    removerSeleccionados() {
+      this.cart = this.cart.filter(item => !this.selectedItems.includes(item.id));
+      this.selectedItems = [];
+    },
+    
+    procesarCart() {
+      if (!this.cart.length) return;
+      
+      // Validate nombres field
+      if (!this.nombres.trim()) {
+        alert('El campo Nombres es obligatorio');
+        return;
+      }
+      
+      // Validate product quantities against available stock
+      const stockValidation = this.validateStockQuantities();
+      
+      if (!stockValidation.isValid) {
+        alert(`Error: ${stockValidation.message}`);
+        return;
+      }
+      
+      // Calculate total amount
+      const montoTotal = this.cart.reduce((total, item) => total + (item.quantity * item.precio), 0);
+      const productoComprobantePayload = {
+        nombres: this.nombres,
+        telefono: this.telefono,
+        correo: this.correo,
+        monto_total: parseFloat(montoTotal.toFixed(2)),
+        items: this.cart.map(item => ({
+          stock_id: item.id,
+          cantidad: item.quantity,
+          precio: item.precio
+        }))
+      };
+      
+      axios.post('/api/productos-comprobante', productoComprobantePayload)
+        .then(response => {
+          // Update stock quantities after successful submission
+          this.updateStockQuantities();
+          alert('Producto comprobante y items creados correctamente');
+          
+          // Reset form fields
+          this.nombres = '';
+          this.telefono = '';
+          this.correo = '';
+          
+          this.cart = [];
+          this.selectedItems = [];
+          this.closeCart();
+          
+          // Refresh items list to show updated stock quantities
+          this.fetchItems();
+        })
+        .catch(error => {
+          console.error('Error al crear producto comprobante/items:', error);
+          alert('Error al crear producto comprobante/items');
+        });
+    },
+    
+    validateStockQuantities() {
+      // Check if any product quantity exceeds available stock
+      for (const item of this.cart) {
+        if (item.quantity > item.num_stock) {
+          return {
+            isValid: false,
+            message: `El producto "${item.descripcion}" excede el stock disponible. Stock actual: ${item.num_stock}, Cantidad solicitada: ${item.quantity}`
+          };
+        }
+      }
+      return { isValid: true };
+    },
+    
+    updateStockQuantities() {
+      // Create an array of products that need stock updates
+      const stockUpdates = this.cart.map(item => ({
+        id: item.id,
+        num_stock: item.num_stock - item.quantity
+      }));
+
+      console.log('Updating stock for items:', this.cart);
+      console.log('Stock updates to be sent:', stockUpdates);
+
+      // Send request to update stock quantities
+      axios.post('/api/update-stock', { updates: stockUpdates })
+        .then(response => {
+          console.log('Stock update response:', response.data);
+
+          // Update local product list with new stock values
+          stockUpdates.forEach(update => {
+            const producto = this.items.find(p => p.id === update.id);
+            if (producto) {
+              producto.num_stock = update.num_stock;
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error al actualizar el stock:', error);
+        });
+    },
   },
   mounted() {
     this.fetchItems();
@@ -1177,5 +1443,95 @@ export default {
 .selected-proveedor .btn-close {
   width: 0.5em;
   height: 0.5em;
+}
+
+/* Cart related styles */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.btn-cart-icon {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 1001;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.btn-cart-icon i {
+  font-size: 1.8rem;
+}
+
+.cart-item-count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.animate-add {
+  animation: addItem 0.5s ease-in-out;
+}
+
+@keyframes addItem {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.checkmark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 128, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+  animation: fadeOut 1.5s forwards;
+}
+
+.added-text {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
