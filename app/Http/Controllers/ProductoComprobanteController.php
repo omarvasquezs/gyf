@@ -27,7 +27,7 @@ class ProductoComprobanteController extends Controller
         $request->validate([
             'nombres' => 'required|string',
             'telefono' => 'required|string',
-            'correo' => 'required|string|email',
+            'correo' => 'nullable|string|email',
             'monto_total' => 'required|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.stock_id' => 'required|integer|exists:stock,id',
