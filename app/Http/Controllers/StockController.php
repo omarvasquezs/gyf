@@ -34,10 +34,14 @@ class StockController extends Controller
             $perPage = 10; // Set to 10 for ControlStockCrud
         }
 
-        // Filter by tipo_producto
+        // Filter by tipo_producto (multi-select support)
         if ($request->filled('tipo_producto')) {
             $tipoProductos = explode(',', $request->tipo_producto);
-            $query->whereIn('tipo_producto', $tipoProductos);
+            if (count($tipoProductos) === 1 && $tipoProductos[0] === '') {
+                // 'Todos' selected, do not filter
+            } else {
+                $query->whereIn('tipo_producto', $tipoProductos);
+            }
         }
 
         // Filter by marca instead of proveedor

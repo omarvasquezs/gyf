@@ -34,15 +34,38 @@
             </div>
           </th>
           <th>
-            <div class="position-relative select-wrapper">
-              <select v-model="filters.tipo_producto" @change="applyFilters" class="form-control">
-                <option value="">Todos</option>
-                <option value="l">Lentes de Sol</option>
-                <option value="m">Montura</option>
-                <option value="c">Lentes de Contacto</option>
-                <option value="u">Lunas</option>
-              </select>
-              <i class="fas fa-chevron-down select-arrow"></i>
+            <div class="position-relative select-wrapper" style="min-width:180px;">
+              <div @click="showTipoProductoDropdown = !showTipoProductoDropdown" class="form-control d-flex align-items-center justify-content-between" style="cursor:pointer;">
+                <span>
+                  <span v-if="filters.tipo_producto.length === 0">Todos</span>
+                  <span v-else>
+                    {{ filters.tipo_producto.map(getTipoProductoLabel).join(', ') }}
+                  </span>
+                </span>
+                <i class="fas fa-chevron-down select-arrow" :class="{ 'rotate-180': showTipoProductoDropdown }"></i>
+              </div>
+              <div v-if="showTipoProductoDropdown" class="dropdown-menu show p-2" style="width:100%;min-width:170px;max-width:250px;">
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="tipo_todos" :checked="filters.tipo_producto.length === 0" @change="selectAllTipoProducto">
+                  <label class="form-check-label" for="tipo_todos">Todos</label>
+                </div>
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="tipo_l" value="l" :checked="filters.tipo_producto.includes('l')" @change="toggleTipoProducto('l')">
+                  <label class="form-check-label" for="tipo_l">Lentes de Sol</label>
+                </div>
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="tipo_m" value="m" :checked="filters.tipo_producto.includes('m')" @change="toggleTipoProducto('m')">
+                  <label class="form-check-label" for="tipo_m">Montura</label>
+                </div>
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="tipo_c" value="c" :checked="filters.tipo_producto.includes('c')" @change="toggleTipoProducto('c')">
+                  <label class="form-check-label" for="tipo_c">Lentes de Contacto</label>
+                </div>
+                <div class="form-check mb-1">
+                  <input class="form-check-input" type="checkbox" id="tipo_u" value="u" :checked="filters.tipo_producto.includes('u')" @change="toggleTipoProducto('u')">
+                  <label class="form-check-label" for="tipo_u">Lunas</label>
+                </div>
+              </div>
             </div>
           </th>
           <th>
@@ -587,7 +610,7 @@ export default {
         codigo: '',
         descripcion: '',
         precio: '',
-        tipo_producto: '',
+        tipo_producto: [], // now an array for multi-select
         marca: '',
         material: ''
       },
@@ -619,7 +642,8 @@ export default {
       recentlyAddedProductId: null,
       nombres: '',
       telefono: '',
-      correo: ''
+      correo: '',
+      showTipoProductoDropdown: false,
     };
   },
   computed: {
@@ -641,7 +665,7 @@ export default {
         codigo: this.filters.codigo || null,
         descripcion: this.filters.descripcion || null,
         precio: this.filters.precio || null,
-        tipo_producto: this.filters.tipo_producto || null,
+        tipo_producto: this.filters.tipo_producto.length ? this.filters.tipo_producto.join(',') : null,
         marca: this.filters.marca || null,
         material: this.filters.material || null,
         page: this.pagination.current_page
@@ -816,7 +840,7 @@ export default {
         codigo: '',
         descripcion: '',
         precio: '',
-        tipo_producto: '',
+        tipo_producto: [],
         marca: '',
         material: ''
       };
@@ -1293,6 +1317,26 @@ export default {
           console.error('Error al actualizar el stock:', error);
         });
     },
+    selectAllTipoProducto() {
+      this.filters.tipo_producto = [];
+      this.applyFilters();
+      this.showTipoProductoDropdown = false;
+    },
+    toggleTipoProducto(tipo) {
+      const idx = this.filters.tipo_producto.indexOf(tipo);
+      if (idx === -1) {
+        this.filters.tipo_producto.push(tipo);
+      } else {
+        this.filters.tipo_producto.splice(idx, 1);
+      }
+      // If all are unchecked, revert to 'Todos'
+      if (this.filters.tipo_producto.length === 0) {
+        this.applyFilters();
+        this.showTipoProductoDropdown = false;
+        return;
+      }
+      this.applyFilters();
+    },
   },
   mounted() {
     this.fetchItems();
@@ -1302,6 +1346,11 @@ export default {
     
     // Close proveedor dropdown when clicking outside
     document.addEventListener('click', (e) => {
+      const tipoDropdown = document.querySelector('.select-wrapper .dropdown-menu');
+      const tipoControl = document.querySelector('.select-wrapper .form-control');
+      if (this.showTipoProductoDropdown && tipoDropdown && !tipoDropdown.contains(e.target) && tipoControl && !tipoControl.contains(e.target)) {
+        this.showTipoProductoDropdown = false;
+      }
       const isClickInsideResults = e.target.closest('.proveedor-results');
       const isClickInsideInput = e.target.closest('.position-relative input');
       
