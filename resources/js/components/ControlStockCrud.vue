@@ -1131,28 +1131,14 @@ export default {
       this.materialFormErrors = [];
       try {
         let response;
-        
         if (this.isEditingMaterial) {
           response = await axios.put(`/api/materiales/${this.editingMaterialId}`, this.materialForm);
         } else {
           response = await axios.post('/api/materiales', this.materialForm);
         }
-        
-        // Close the material modal
+        this.fetchMateriales();
         this.closeMaterialModal();
-        
-        // Show success message
-        this.alertMessage = this.isEditingMaterial ? 'Material actualizado con éxito.' : 'Material creado con éxito.';
-        
-        // Fetch updated list of materiales
-        await this.fetchMateriales();
-        
-        // Set the newly created/edited material as the selected material
-        const newMaterial = response.data.id || (response.data.material && response.data.material.id) || this.editingMaterialId;
-        if (newMaterial) {
-          this.form.id_material = newMaterial;
-        }
-        
+        this.alertMessage = this.isEditingMaterial ? 'Material actualizado con éxito.' : 'Material creado con éxito.'; 
         setTimeout(() => this.alertMessage = '', 5000);
       } catch (error) {
         console.error('Error submitting material form:', error.response?.data);
@@ -1227,7 +1213,7 @@ export default {
       
       // Validate nombres field
       if (!this.nombres.trim()) {
-        alert('El campo Nombres es obligatorio');
+        alert('El campo Nombres es obligatorio.');
         return;
       }
       
