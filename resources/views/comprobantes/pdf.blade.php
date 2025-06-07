@@ -51,9 +51,7 @@
 <body>
     <div class="header">
         <!-- Logo del comprobante -->
-        <div style="text-align: center; margin-bottom: 10px;">
-            <img src="{{ url('/images/gyf_logo_comprobantes_58.png') }}" style="max-width: 160px; height: auto; display: block; margin: 0 auto;">
-        </div>
+
         <h2 style="margin:0;">G & F oftalmólogas. S.A.C.</h2>
         <p>Dirección: Av. El Sol esq. Jr. Unión. Villa el Salvador</p>
         <p>RUC: 20613814265</p>
@@ -97,18 +95,7 @@
 
     <div class="footer">
         <p>¡Gracias por su preferencia!</p>
-        @php
-            $qrContent = json_encode([
-                'serie'         => $comprobante->serie,
-                'correlativo'   => $comprobante->correlativo,
-                'monto_total'   => $comprobante->monto_total,
-                'fecha_emision' => \Carbon\Carbon::now()->format('d/m/Y H:i'),
-                // add additional fields as needed
-            ]);
-        @endphp
-        <div class="qr" style="text-align: center; margin-top: 20px;">
-            <img src="data:image/png;base64,{{ base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')->size(150)->generate($qrContent)) }}" alt="QR Code">
-        </div>
+
         <p>Representación impresa de la {{ $comprobante->tipo === 'b' ? 'BOLETA' : 'FACTURA' }} de venta electrónica</p>
     </div>
 </body>
