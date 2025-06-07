@@ -539,7 +539,10 @@
                   <tr v-for="(item, index) in cart" :key="item.id">
                     <td><input type="checkbox" v-model="selectedItems" :value="item.id"></td>
                     <td>{{ item.descripcion || 'Sin descripción' }}</td>
-                    <td>S/. {{ item.precio }}</td>
+                    <td>
+                      <input type="number" v-model.number="item.precio" min="0" step="0.01" class="form-control" 
+                             style="width:100px;" @change="updatePrecioUnitario(index, $event)">
+                    </td>
                     <td>
                       <input type="number" v-model.number="item.quantity" min="1" class="form-control"
                         style="width:100px;" @change="updateQuantity(index, $event)">
@@ -1177,6 +1180,16 @@ export default {
       this.cart.splice(index, 1);
     },
     
+    updatePrecioUnitario(index, event) {
+      const newPrecio = parseFloat(event.target.value);
+      if (!isNaN(newPrecio) && newPrecio >= 0) {
+        this.cart[index].precio = newPrecio;
+      } else {
+        // Optionally, revert to old value or show an error
+        event.target.value = this.cart[index].precio; // Revert to old value
+      }
+    },
+
     updateQuantity(index, event) {
       const newQuantity = parseInt(event.target.value, 10);
       if (newQuantity > 0) {
