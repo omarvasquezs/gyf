@@ -865,14 +865,14 @@ export default {
       formData.append('descripcion', this.form.descripcion || '');
       formData.append('precio', this.form.precio);
       formData.append('tipo_producto', this.form.tipo_producto);
+      formData.append('num_stock', this.form.num_stock); // Always include num_stock
       if (this.form.tipo_producto === 'u') {
         formData.append('id_tipo_luna', this.form.id_tipo_luna);
         formData.append('id_diseno_luna', this.form.id_diseno_luna);
         formData.append('id_laboratorio_luna', this.form.id_laboratorio_luna);
-        formData.append('indice_luna', this.form.indice); // <-- changed from 'indice' to 'indice_luna'
+        formData.append('indice_luna', this.form.indice);
       } else {
         formData.append('id_marca', this.form.id_marca);
-        formData.append('num_stock', this.form.num_stock);
         if (this.form.codigo) formData.append('codigo', this.form.codigo);
         if (this.form.genero) formData.append('genero', this.form.genero);
         if (this.form.id_material) formData.append('id_material', this.form.id_material);

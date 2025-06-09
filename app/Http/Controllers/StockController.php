@@ -122,7 +122,7 @@ class StockController extends Controller
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
                 'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
-                'num_stock' => $validated['tipo_producto'] !== 'u' ? $validated['num_stock'] : null
+                'num_stock' => $validated['num_stock'],
             ]);
 
             return response()->json($stock, 201);
@@ -175,7 +175,7 @@ class StockController extends Controller
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
                 'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
-                'num_stock' => $validated['tipo_producto'] !== 'u' ? $validated['num_stock'] : null
+                'num_stock' => $validated['num_stock'],
             ];
             if ($request->hasFile('imagen')) {
                 if ($stock->imagen) {
