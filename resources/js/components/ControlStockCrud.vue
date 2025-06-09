@@ -791,7 +791,7 @@ export default {
     },
     async fetchLaboratoriosLuna() {
       try {
-        const res = await axios.get('/api/laboratorio-lunas');
+        const res = await axios.get('/api/laboratorios-luna');
         this.laboratoriosLuna = res.data.data || res.data;
       } catch (e) { console.error('Error cargando laboratorios de lunas', e); }
     },
