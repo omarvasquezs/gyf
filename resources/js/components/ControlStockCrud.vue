@@ -869,7 +869,7 @@ export default {
         formData.append('id_tipo_luna', this.form.id_tipo_luna);
         formData.append('id_diseno_luna', this.form.id_diseno_luna);
         formData.append('id_laboratorio_luna', this.form.id_laboratorio_luna);
-        formData.append('indice', this.form.indice);
+        formData.append('indice_luna', this.form.indice); // <-- changed from 'indice' to 'indice_luna'
       } else {
         formData.append('id_marca', this.form.id_marca);
         formData.append('num_stock', this.form.num_stock);

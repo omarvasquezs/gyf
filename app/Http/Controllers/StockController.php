@@ -83,7 +83,7 @@ class StockController extends Controller
             'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
             'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
             'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
-            'indice' => 'required_if:tipo_producto,u|nullable|numeric|in:1.49,1.50,1.56,1.59,1.60,1.607,1.74',
+            'indice_luna' => 'required_if:tipo_producto,u|nullable',
             // Otros campos solo requeridos si NO es Lunas
             'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
             'codigo' => 'nullable|string|max:255',
@@ -115,7 +115,7 @@ class StockController extends Controller
                 'id_tipo_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_tipo_luna'] : null,
                 'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
                 'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
-                'indice' => $validated['tipo_producto'] === 'u' ? $validated['indice'] : null,
+                'indice_luna' => $validated['tipo_producto'] === 'u' ? $validated['indice_luna'] : null,
                 // Otros
                 'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
                 'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,
@@ -147,7 +147,7 @@ class StockController extends Controller
             'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
             'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
             'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
-            'indice' => 'required_if:tipo_producto,u|nullable|numeric|in:1.49,1.50,1.56,1.59,1.60,1.607,1.74',
+            'indice_luna' => 'required_if:tipo_producto,u|nullable',
             // Otros campos solo requeridos si NO es Lunas
             'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
             'imagen' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -168,7 +168,7 @@ class StockController extends Controller
                 'id_tipo_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_tipo_luna'] : null,
                 'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
                 'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
-                'indice' => $validated['tipo_producto'] === 'u' ? $validated['indice'] : null,
+                'indice_luna' => $validated['tipo_producto'] === 'u' ? $validated['indice_luna'] : null,
                 // Otros
                 'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
                 'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,

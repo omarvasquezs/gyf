@@ -24,7 +24,7 @@ class Stock extends Model
         'id_tipo_luna',
         'id_diseno_luna',
         'id_laboratorio_luna',
-        'indice'
+        'indice_luna'
     ];
 
     protected $table = 'stock';
