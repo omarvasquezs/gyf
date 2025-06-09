@@ -234,12 +234,16 @@ export default {
         },
         toggleFechaHoyDia() {
             if (this.filters.fechaHoyDia) {
-                this.filters.mesActual = false;
-                const today = new Date().toISOString().split('T')[0];
-                this.filters.fechaInicio = today;
-                this.filters.fechaFin = today;
+            this.filters.mesActual = false;
+            // Get Peru time (UTC-5)
+            const now = new Date();
+            // Convert to UTC-5 by subtracting 5 hours
+            const peruTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000) - (5 * 60 * 60 * 1000));
+            const today = peruTime.toISOString().split('T')[0];
+            this.filters.fechaInicio = today;
+            this.filters.fechaFin = today;
             } else {
-                this.clearDateFilters();
+            this.clearDateFilters();
             }
             this.pagination.currentPage = 1; // Reset to first page when changing filters
             this.fetchComprobantes();
