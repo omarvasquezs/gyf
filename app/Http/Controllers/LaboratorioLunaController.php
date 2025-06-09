@@ -7,9 +7,16 @@ use Illuminate\Http\Request;
 
 class LaboratorioLunaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return LaboratorioLuna::all();
+        $perPage = $request->input('per_page', 10);
+        $query = LaboratorioLuna::query();
+
+        if ($request->filled('nombre')) {
+            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+        }
+
+        return $query->orderBy('id', 'desc')->paginate($perPage);
     }
 
     public function store(Request $request)
