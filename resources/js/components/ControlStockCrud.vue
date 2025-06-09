@@ -177,6 +177,15 @@
                     <i class="fas fa-chevron-down select-arrow"></i>
                   </div>
                 </div>
+                <div class="col-md-6" v-if="form.tipo_producto !== 'u' && form.tipo_producto !== ''">
+                  <label for="num_stock" class="form-label">Cantidad en Stock*:</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-boxes"></i>
+                    </span>
+                    <input type="number" v-model="form.num_stock" id="num_stock" class="form-control" min="0" :required="form.tipo_producto !== 'u' && form.tipo_producto !== ''">
+                  </div>
+                </div>
               </div>
               <template v-if="form.tipo_producto === 'u'">
                 <div class="row mb-3">
@@ -233,17 +242,6 @@
                 </div>
               </template>
               <template v-else>
-                <div class="row mb-3">
-                  <div class="col-md-6" v-if="form.tipo_producto !== ''">
-                    <label for="num_stock" class="form-label">Cantidad en Stock*:</label>
-                    <div class="input-group">
-                      <span class="input-group-text">
-                        <i class="fas fa-boxes"></i>
-                      </span>
-                      <input type="number" v-model="form.num_stock" id="num_stock" class="form-control" min="0" :required="form.tipo_producto !== 'u' && form.tipo_producto !== ''">
-                    </div>
-                  </div>
-                </div>
                 <div class="row mb-3">
                   <div class="col-12">
                     <label for="descripcion" class="form-label">Descripción:</label>
