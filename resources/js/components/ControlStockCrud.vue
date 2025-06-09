@@ -312,7 +312,7 @@
                       <span class="input-group-text">
                         <i class="fas fa-tag"></i>
                       </span>
-                      <input type="text" v-model="form.descripcion" id="descripcion" class="form-control">
+                      <input type="text" v-model="form.descripcion" id="descripcion" class="form-control" placeholder="Ingrese descripción">
                     </div>
                   </div>
                 </div>
@@ -323,14 +323,14 @@
                       <span class="input-group-text">
                         <i class="fas fa-barcode"></i>
                       </span>
-                      <input type="text" v-model="form.codigo" id="codigo" class="form-control">
+                      <input type="text" v-model="form.codigo" id="codigo" class="form-control" placeholder="Ingrese código">
                     </div>
                   </div>
                   <div class="col-md-6">
                     <label for="precio" class="form-label">Precio*:</label>
                     <div class="input-group">
                       <span class="input-group-text">S/.</span>
-                      <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required>
+                      <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required placeholder="Ingrese precio">
                     </div>
                   </div>
                 </div>
