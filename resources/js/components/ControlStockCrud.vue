@@ -798,7 +798,7 @@ export default {
     handleTipoProductoChange() {
       if (this.form.tipo_producto === 'u') {
         // Limpiar campos no relevantes para Lunas
-        this.form.num_stock = null;
+        this.form.num_stock = 1; // default Luna stock to 1
         this.form.codigo = '';
         this.form.genero = '';
         this.form.id_material = '';
