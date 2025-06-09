@@ -82,7 +82,7 @@ class StockController extends Controller
             // Lunas fields
             'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
             'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
-            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
+            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_lunas,id',
             'indice_luna' => 'required_if:tipo_producto,u|nullable',
             // Otros campos solo requeridos si NO es Lunas
             'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
@@ -146,7 +146,7 @@ class StockController extends Controller
             // Lunas fields
             'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
             'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
-            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
+            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_lunas,id',
             'indice_luna' => 'required_if:tipo_producto,u|nullable',
             // Otros campos solo requeridos si NO es Lunas
             'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
