@@ -116,11 +116,12 @@ class StockController extends Controller
                 'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
                 'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
                 'indice_luna' => $validated['tipo_producto'] === 'u' ? $validated['indice_luna'] : null,
-                // Otros
-                'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
-                'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,
+                // Common fields for all product types
+                'id_marca' => $validated['id_marca'] ?? null,
+                'codigo' => $validated['codigo'] ?? null,
+                'id_material' => $validated['id_material'] ?? null,
+                // Non-Luna specific fields
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
-                'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
                 'num_stock' => $validated['num_stock'],
             ]);
@@ -169,11 +170,12 @@ class StockController extends Controller
                 'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
                 'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
                 'indice_luna' => $validated['tipo_producto'] === 'u' ? $validated['indice_luna'] : null,
-                // Otros
-                'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
-                'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,
+                // Common fields for all product types
+                'id_marca' => $validated['id_marca'] ?? null,
+                'codigo' => $validated['codigo'] ?? null,
+                'id_material' => $validated['id_material'] ?? null,
+                // Non-Luna specific fields
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
-                'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
                 'num_stock' => $validated['num_stock'],
             ];

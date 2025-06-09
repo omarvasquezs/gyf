@@ -190,16 +190,67 @@
               <template v-if="form.tipo_producto === 'u'">
                 <div class="row mb-3">
                   <div class="col-12">
-                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <label for="descripcion_luna" class="form-label">Descripción:</label>
                     <div class="input-group">
                       <span class="input-group-text">
                         <i class="fas fa-tag"></i>
                       </span>
-                      <input type="text" v-model="form.descripcion" id="descripcion" class="form-control">
+                      <input type="text" v-model="form.descripcion" id="descripcion_luna" class="form-control" placeholder="Ingrese descripción">
                     </div>
                   </div>
                 </div>
                 <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="codigo" class="form-label">Código:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-barcode"></i>
+                      </span>
+                      <input type="text" v-model="form.codigo" id="codigo" class="form-control" placeholder="Ingrese código">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="id_marca" class="form-label">Marca:</label>
+                    <div class="d-flex">
+                      <div class="position-relative select-wrapper flex-grow-1">
+                        <select v-model="form.id_marca" id="id_marca" class="form-control">
+                          <option value="">Seleccione una marca</option>
+                          <option v-for="marca in marcas" :key="marca.id" :value="marca.id">{{ marca.marca }}</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                      <button type="button" @click="showMarcaForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nueva marca">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" @click="editSelectedMarca" class="btn btn-sm ms-2"
+                        :class="form.id_marca ? 'btn-outline-warning' : 'btn-outline-secondary'"
+                        :disabled="!form.id_marca" title="Editar marca seleccionada">
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="id_material" class="form-label">Material:</label>
+                    <div class="d-flex">
+                      <div class="position-relative select-wrapper flex-grow-1">
+                        <select v-model="form.id_material" id="id_material" class="form-control">
+                          <option value="">Seleccione un material</option>
+                          <option v-for="material in materiales" :key="material.id" :value="material.id">{{ material.material }}</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                      <button type="button" @click="showMaterialForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nuevo material">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" @click="editSelectedMaterial" class="btn btn-sm ms-2"
+                        :class="form.id_material ? 'btn-outline-warning' : 'btn-outline-secondary'"
+                        :disabled="!form.id_material" title="Editar material seleccionado">
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
+                    </div>
+                  </div>
                   <div class="col-md-6">
                     <label for="precio" class="form-label">Precio*:</label>
                     <div class="input-group">
@@ -207,6 +258,8 @@
                       <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required>
                     </div>
                   </div>
+                </div>
+                <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="id_tipo_luna" class="form-label">Tipo de Lunas*:</label>
                     <div class="position-relative select-wrapper">
@@ -217,8 +270,6 @@
                       <i class="fas fa-chevron-down select-arrow"></i>
                     </div>
                   </div>
-                </div>
-                <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="id_diseno_luna" class="form-label">Diseño*:</label>
                     <div class="position-relative select-wrapper">
@@ -229,6 +280,8 @@
                       <i class="fas fa-chevron-down select-arrow"></i>
                     </div>
                   </div>
+                </div>
+                <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="indice" class="form-label">Índice*:</label>
                     <div class="position-relative select-wrapper">
@@ -239,8 +292,6 @@
                       <i class="fas fa-chevron-down select-arrow"></i>
                     </div>
                   </div>
-                </div>
-                <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="id_laboratorio_luna" class="form-label">Laboratorio*:</label>
                     <div class="position-relative select-wrapper">
@@ -797,13 +848,11 @@ export default {
     },
     handleTipoProductoChange() {
       if (this.form.tipo_producto === 'u') {
-        // Limpiar campos no relevantes para Lunas
+        // Set default values for Lunas
         this.form.num_stock = 1; // default Luna stock to 1
-        this.form.codigo = '';
+        // Only clear fields that are not relevant for Lunas
         this.form.genero = '';
-        this.form.id_material = '';
         this.form.fecha_compra = '';
-        this.form.id_marca = '';
         this.form.imagen = null;
         // Reset luna-specific fields so placeholder option shows
         this.form.id_tipo_luna = '';
@@ -871,6 +920,10 @@ export default {
         formData.append('id_diseno_luna', this.form.id_diseno_luna);
         formData.append('id_laboratorio_luna', this.form.id_laboratorio_luna);
         formData.append('indice_luna', this.form.indice);
+        // Add codigo, marca, and material for Lunas
+        if (this.form.codigo) formData.append('codigo', this.form.codigo);
+        if (this.form.id_marca) formData.append('id_marca', this.form.id_marca);
+        if (this.form.id_material) formData.append('id_material', this.form.id_material);
       } else {
         formData.append('id_marca', this.form.id_marca);
         if (this.form.codigo) formData.append('codigo', this.form.codigo);
