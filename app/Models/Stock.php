@@ -19,7 +19,12 @@ class Stock extends Model
         'codigo',
         'genero',
         'id_material',
-        'fecha_compra'
+        'fecha_compra',
+        // Lunas
+        'id_tipo_luna',
+        'id_diseno_luna',
+        'id_laboratorio_luna',
+        'indice'
     ];
 
     protected $table = 'stock';

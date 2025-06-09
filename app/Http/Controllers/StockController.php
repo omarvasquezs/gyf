@@ -79,27 +79,29 @@ class StockController extends Controller
             'imagen' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'precio' => 'required|numeric|min:0',
             'tipo_producto' => 'required|in:l,m,c,u',
-            'id_marca' => 'required|exists:marcas,id', // Changed from id_proveedor to id_marca
+            // Lunas fields
+            'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
+            'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
+            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
+            'indice' => 'required_if:tipo_producto,u|nullable|numeric|in:1.49,1.50,1.56,1.59,1.60,1.607,1.74',
+            // Otros campos solo requeridos si NO es Lunas
+            'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
             'codigo' => 'nullable|string|max:255',
             'genero' => 'nullable|in:H,M,N,U',
             'id_material' => 'nullable|exists:materiales,id',
             'fecha_compra' => 'nullable|date',
-            'num_stock' => 'required|integer|min:0'
+            'num_stock' => 'required_unless:tipo_producto,u|nullable|integer|min:0'
         ]);
 
         try {
-            $validated['imagen'] = null; // Default to null
-
+            $validated['imagen'] = null;
             if ($request->hasFile('imagen')) {
                 $file = $request->file('imagen');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                
-                // Ensure directory exists
                 $path = public_path('images/stock');
                 if (!file_exists($path)) {
                     mkdir($path, 0777, true);
                 }
-                
                 $file->move($path, $filename);
                 $validated['imagen'] = $filename;
             }
@@ -109,12 +111,18 @@ class StockController extends Controller
                 'imagen' => $validated['imagen'],
                 'precio' => $validated['precio'],
                 'tipo_producto' => $validated['tipo_producto'],
-                'id_marca' => $validated['id_marca'], // Changed from id_proveedor to id_marca
-                'codigo' => $validated['codigo'] ?? null,
-                'genero' => $validated['genero'] ?? null,
-                'id_material' => $validated['id_material'] ?? null,
-                'fecha_compra' => $validated['fecha_compra'] ?? null,
-                'num_stock' => $validated['num_stock']
+                // Lunas
+                'id_tipo_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_tipo_luna'] : null,
+                'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
+                'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
+                'indice' => $validated['tipo_producto'] === 'u' ? $validated['indice'] : null,
+                // Otros
+                'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
+                'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,
+                'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
+                'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
+                'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
+                'num_stock' => $validated['tipo_producto'] !== 'u' ? $validated['num_stock'] : null
             ]);
 
             return response()->json($stock, 201);
@@ -135,13 +143,19 @@ class StockController extends Controller
             'descripcion' => 'nullable|string|max:255',
             'precio' => 'required|numeric|min:0',
             'tipo_producto' => 'required|in:l,m,c,u',
-            'id_marca' => 'required|exists:marcas,id', // Changed from id_proveedor to id_marca
+            // Lunas fields
+            'id_tipo_luna' => 'required_if:tipo_producto,u|nullable|exists:tipo_lunas,id',
+            'id_diseno_luna' => 'required_if:tipo_producto,u|nullable|exists:diseno_lunas,id',
+            'id_laboratorio_luna' => 'required_if:tipo_producto,u|nullable|exists:laboratorios_luna,id',
+            'indice' => 'required_if:tipo_producto,u|nullable|numeric|in:1.49,1.50,1.56,1.59,1.60,1.607,1.74',
+            // Otros campos solo requeridos si NO es Lunas
+            'id_marca' => 'required_unless:tipo_producto,u|nullable|exists:marcas,id',
             'imagen' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'codigo' => 'nullable|string|max:255',
             'genero' => 'nullable|in:H,M,N,U',
             'id_material' => 'nullable|exists:materiales,id',
             'fecha_compra' => 'nullable|date',
-            'num_stock' => 'required|integer|min:0'
+            'num_stock' => 'required_unless:tipo_producto,u|nullable|integer|min:0'
         ]);
 
         try {
@@ -150,30 +164,31 @@ class StockController extends Controller
                 'descripcion' => $validated['descripcion'] ?? $stock->descripcion,
                 'precio' => $validated['precio'],
                 'tipo_producto' => $validated['tipo_producto'],
-                'id_marca' => $validated['id_marca'], // Changed from id_proveedor to id_marca
-                'codigo' => $validated['codigo'] ?? $stock->codigo,
-                'genero' => $validated['genero'] ?? $stock->genero,
-                'id_material' => $validated['id_material'] ?? $stock->id_material,
-                'fecha_compra' => $validated['fecha_compra'] ?? $stock->fecha_compra,
-                'num_stock' => $validated['num_stock']
+                // Lunas
+                'id_tipo_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_tipo_luna'] : null,
+                'id_diseno_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_diseno_luna'] : null,
+                'id_laboratorio_luna' => $validated['tipo_producto'] === 'u' ? $validated['id_laboratorio_luna'] : null,
+                'indice' => $validated['tipo_producto'] === 'u' ? $validated['indice'] : null,
+                // Otros
+                'id_marca' => $validated['tipo_producto'] !== 'u' ? $validated['id_marca'] : null,
+                'codigo' => $validated['tipo_producto'] !== 'u' ? ($validated['codigo'] ?? null) : null,
+                'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
+                'id_material' => $validated['tipo_producto'] !== 'u' ? ($validated['id_material'] ?? null) : null,
+                'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
+                'num_stock' => $validated['tipo_producto'] !== 'u' ? $validated['num_stock'] : null
             ];
-            
             if ($request->hasFile('imagen')) {
-                // Delete old image
                 if ($stock->imagen) {
                     $oldPath = public_path('images/stock/' . $stock->imagen);
                     if (file_exists($oldPath)) {
                         unlink($oldPath);
                     }
                 }
-
-                // Store new image
                 $file = $request->file('imagen');
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('images/stock'), $filename);
                 $updateData['imagen'] = $filename;
             }
-
             $stock->update($updateData);
             return response()->json($stock);
         } catch (\Exception $e) {

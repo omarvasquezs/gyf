@@ -163,12 +163,11 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="submitForm" enctype="multipart/form-data">
-              <!-- Row 1: Tipo de producto only -->
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="tipo_producto" class="form-label">Tipo de Producto*:</label>
                   <div class="position-relative select-wrapper">
-                    <select v-model="form.tipo_producto" id="tipo_producto" class="form-control" required>
+                    <select v-model="form.tipo_producto" id="tipo_producto" class="form-control" required @change="handleTipoProductoChange">
                       <option value="" disabled selected>Seleccione un tipo de producto</option>
                       <option value="l">Lentes de Sol</option>
                       <option value="m">Montura</option>
@@ -178,137 +177,181 @@
                     <i class="fas fa-chevron-down select-arrow"></i>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="num_stock" class="form-label">Cantidad en Stock*:</label>
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-boxes"></i>
-                    </span>
-                    <input type="number" v-model="form.num_stock" id="num_stock" class="form-control" min="0" required>
-                  </div>
-                </div>
               </div>
-
-              <!-- Row 2: Descripcion in its own row -->
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label for="descripcion" class="form-label">Descripción:</label>
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-tag"></i>
-                    </span>
-                    <input type="text" v-model="form.descripcion" id="descripcion" class="form-control">
+              <template v-if="form.tipo_producto === 'u'">
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-tag"></i>
+                      </span>
+                      <input type="text" v-model="form.descripcion" id="descripcion" class="form-control">
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Row 3: Código and Precio -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="codigo" class="form-label">Código:</label>
-                  <div class="input-group">
-                    <span class="input-group-text">
-                      <i class="fas fa-barcode"></i>
-                    </span>
-                    <input type="text" v-model="form.codigo" id="codigo" class="form-control">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="precio" class="form-label">Precio*:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">S/.</span>
+                      <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required>
+                    </div>
                   </div>
-                </div>
-                <div class="col-md-6">
-                  <label for="precio" class="form-label">Precio*:</label>
-                  <div class="input-group">
-                    <span class="input-group-text">S/.</span>
-                    <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Row 4: Género and Material -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="genero" class="form-label">Género:</label>
-                  <div class="position-relative select-wrapper">
-                    <select v-model="form.genero" id="genero" class="form-control">
-                      <option value="" selected>Seleccione un género</option>
-                      <option value="H">Hombre</option>
-                      <option value="M">Mujer</option>
-                      <option value="N">Niño</option>
-                      <option value="U">Unisex</option>
+                  <div class="col-md-6">
+                    <label for="id_tipo_luna" class="form-label">Tipo de Lunas*:</label>
+                    <select v-model="form.id_tipo_luna" id="id_tipo_luna" class="form-control" required>
+                      <option value="" disabled selected>Seleccione tipo de lunas</option>
+                      <option v-for="tipo in tiposLuna" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
                     </select>
-                    <i class="fas fa-chevron-down select-arrow"></i>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label for="material" class="form-label">Material:</label>
-                  <div class="d-flex">
-                    <div class="position-relative select-wrapper flex-grow-1">
-                      <select v-model="form.id_material" id="material" class="form-control">
-                        <option value="" disabled selected>Seleccione un material</option>
-                        <option v-for="material in materiales" :key="material.id" :value="material.id">
-                          {{ material.material }}
-                        </option>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="id_diseno_luna" class="form-label">Diseño*:</label>
+                    <select v-model="form.id_diseno_luna" id="id_diseno_luna" class="form-control" required>
+                      <option value="" disabled selected>Seleccione diseño</option>
+                      <option v-for="diseno in disenosLuna" :key="diseno.id" :value="diseno.id">{{ diseno.nombre }}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="indice" class="form-label">Índice*:</label>
+                    <select v-model="form.indice" id="indice" class="form-control" required>
+                      <option value="" disabled selected>Seleccione índice</option>
+                      <option v-for="indice in indicesLuna" :key="indice" :value="indice">{{ indice }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="id_laboratorio_luna" class="form-label">Laboratorio*:</label>
+                    <select v-model="form.id_laboratorio_luna" id="id_laboratorio_luna" class="form-control" required>
+                      <option value="" disabled selected>Seleccione laboratorio</option>
+                      <option v-for="lab in laboratoriosLuna" :key="lab.id" :value="lab.id">{{ lab.nombre }}</option>
+                    </select>
+                  </div>
+                </div>
+              </template>
+              <template v-else>
+                <div class="row mb-3">
+                  <div class="col-md-6" v-if="form.tipo_producto !== ''">
+                    <label for="num_stock" class="form-label">Cantidad en Stock*:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-boxes"></i>
+                      </span>
+                      <input type="number" v-model="form.num_stock" id="num_stock" class="form-control" min="0" :required="form.tipo_producto !== 'u' && form.tipo_producto !== ''">
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-tag"></i>
+                      </span>
+                      <input type="text" v-model="form.descripcion" id="descripcion" class="form-control">
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="codigo" class="form-label">Código:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-barcode"></i>
+                      </span>
+                      <input type="text" v-model="form.codigo" id="codigo" class="form-control">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="precio" class="form-label">Precio*:</label>
+                    <div class="input-group">
+                      <span class="input-group-text">S/.</span>
+                      <input type="number" v-model="form.precio" id="precio" class="form-control" step="0.01" required>
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="genero" class="form-label">Género:</label>
+                    <div class="position-relative select-wrapper">
+                      <select v-model="form.genero" id="genero" class="form-control">
+                        <option value="" selected>Seleccione un género</option>
+                        <option value="H">Hombre</option>
+                        <option value="M">Mujer</option>
+                        <option value="N">Niño</option>
+                        <option value="U">Unisex</option>
                       </select>
                       <i class="fas fa-chevron-down select-arrow"></i>
                     </div>
-                    <button type="button" @click="showMaterialForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nuevo material">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                    <button type="button" @click="editSelectedMaterial" class="btn btn-sm ms-2" 
-                      :class="form.id_material ? 'btn-outline-warning' : 'btn-outline-secondary'"
-                      :disabled="!form.id_material" title="Editar material seleccionado">
-                      <i class="fas fa-pencil-alt"></i>
-                    </button>
                   </div>
-                </div>
-              </div>
-
-              <!-- Row 5: Fecha de compra and Marca (instead of Proveedor) -->
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="fecha_compra" class="form-label">Fecha de Compra:</label>
-                  <input type="date" v-model="form.fecha_compra" id="fecha_compra" class="form-control">
-                </div>
-                <div class="col-md-6">
-                  <label for="marca" class="form-label">Marca*:</label>
-                  <div class="d-flex">
-                    <div class="position-relative select-wrapper flex-grow-1">
-                      <select v-model="form.id_marca" id="marca" class="form-control" required>
-                        <option value="" disabled selected>Seleccione una marca</option>
-                        <option v-for="marca in marcas" :key="marca.id" :value="marca.id">
-                          {{ marca.marca }}
-                        </option>
-                      </select>
-                      <i class="fas fa-chevron-down select-arrow"></i>
+                  <div class="col-md-6">
+                    <label for="material" class="form-label">Material:</label>
+                    <div class="d-flex">
+                      <div class="position-relative select-wrapper flex-grow-1">
+                        <select v-model="form.id_material" id="material" class="form-control">
+                          <option value="" disabled selected>Seleccione un material</option>
+                          <option v-for="material in materiales" :key="material.id" :value="material.id">
+                            {{ material.material }}
+                          </option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                      <button type="button" @click="showMaterialForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nuevo material">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" @click="editSelectedMaterial" class="btn btn-sm ms-2" 
+                        :class="form.id_material ? 'btn-outline-warning' : 'btn-outline-secondary'"
+                        :disabled="!form.id_material" title="Editar material seleccionado">
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
                     </div>
-                    <button type="button" @click="showMarcaForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nueva marca">
-                      <i class="fas fa-plus"></i>
-                    </button>
-                    <button type="button" @click="editSelectedMarca" class="btn btn-sm ms-2" 
-                      :class="form.id_marca ? 'btn-outline-warning' : 'btn-outline-secondary'"
-                      :disabled="!form.id_marca" title="Editar marca seleccionada">
-                      <i class="fas fa-pencil-alt"></i>
-                    </button>
                   </div>
                 </div>
-              </div>
-
-              <!-- Row 6: Imagen upload -->
-              <div class="mb-3">
-                <label for="imagen" class="form-label">Imagen{{ isEditing ? ' (dejar en blanco para mantener la actual)' : '' }}:</label>
-                <input 
-                  type="file" 
-                  @change="handleImageUpload" 
-                  id="imagen" 
-                  ref="fileInput"
-                  class="form-control" 
-                >
-              </div>
-
-              <!-- Row 7: Image preview -->
-              <div v-if="imagePreview" class="mb-3">
-                <img :src="imagePreview" alt="Preview" style="max-height: 200px;" class="preview-image">
-              </div>
-
-              <!-- Form buttons -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="fecha_compra" class="form-label">Fecha de Compra:</label>
+                    <input type="date" v-model="form.fecha_compra" id="fecha_compra" class="form-control">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="marca" class="form-label">Marca*:</label>
+                    <div class="d-flex">
+                      <div class="position-relative select-wrapper flex-grow-1">
+                        <select v-model="form.id_marca" id="marca" class="form-control" :required="form.tipo_producto !== 'u' && form.tipo_producto !== ''">
+                          <option value="" disabled selected>Seleccione una marca</option>
+                          <option v-for="marca in marcas" :key="marca.id" :value="marca.id">
+                            {{ marca.marca }}
+                          </option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                      </div>
+                      <button type="button" @click="showMarcaForm" class="btn btn-sm btn-outline-primary ms-2" title="Crear nueva marca">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                      <button type="button" @click="editSelectedMarca" class="btn btn-sm ms-2" 
+                        :class="form.id_marca ? 'btn-outline-warning' : 'btn-outline-secondary'"
+                        :disabled="!form.id_marca" title="Editar marca seleccionada">
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="imagen" class="form-label">Imagen{{ isEditing ? ' (dejar en blanco para mantener la actual)' : '' }}:</label>
+                  <input 
+                    type="file" 
+                    @change="handleImageUpload" 
+                    id="imagen" 
+                    ref="fileInput"
+                    class="form-control" 
+                  >
+                </div>
+                <div v-if="imagePreview" class="mb-3">
+                  <img :src="imagePreview" alt="Preview" style="max-height: 200px;" class="preview-image">
+                </div>
+              </template>
               <div class="d-flex justify-content-end gap-2">
                 <button type="submit" class="btn btn-primary">{{ isEditing ? 'Actualizar' : 'Guardar' }}</button>
                 <button type="button" @click="closeModal" class="btn btn-secondary">Cerrar</button>
@@ -584,6 +627,10 @@ export default {
       marcas: [],
       materiales: [],
       loading: true,
+      tiposLuna: [],
+      disenosLuna: [],
+      laboratoriosLuna: [],
+      indicesLuna: [1.49, 1.50, 1.56, 1.59, 1.60, 1.607, 1.74],
       form: {
         tipo_producto: '',
         descripcion: '',
@@ -594,7 +641,12 @@ export default {
         genero: '',
         id_material: '',
         fecha_compra: '',
-        num_stock: 0
+        num_stock: 0,
+        // Lunas-specific
+        id_tipo_luna: null,
+        id_diseno_luna: null,
+        id_laboratorio_luna: null,
+        indice: null
       },
       imagePreview: null,
       showForm: false,
@@ -715,15 +767,49 @@ export default {
           console.error('Error fetching materiales:', error);
         });
     },
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      this.form.imagen = file;
-      this.imagePreview = URL.createObjectURL(file);
+    async fetchTiposLuna() {
+      try {
+        const res = await axios.get('/api/tipo-lunas');
+        this.tiposLuna = res.data.data || res.data;
+      } catch (e) { console.error('Error cargando tipos de lunas', e); }
+    },
+    async fetchDisenosLuna() {
+      try {
+        const res = await axios.get('/api/diseno-lunas');
+        this.disenosLuna = res.data.data || res.data;
+      } catch (e) { console.error('Error cargando diseños de lunas', e); }
+    },
+    async fetchLaboratoriosLuna() {
+      try {
+        const res = await axios.get('/api/laboratorio-lunas');
+        this.laboratoriosLuna = res.data.data || res.data;
+      } catch (e) { console.error('Error cargando laboratorios de lunas', e); }
+    },
+    handleTipoProductoChange() {
+      if (this.form.tipo_producto === 'u') {
+        // Limpiar campos no relevantes para Lunas
+        this.form.num_stock = null;
+        this.form.codigo = '';
+        this.form.genero = '';
+        this.form.id_material = '';
+        this.form.fecha_compra = '';
+        this.form.id_marca = '';
+        this.form.imagen = null;
+      } else {
+        // Limpiar campos de Lunas
+        this.form.id_tipo_luna = null;
+        this.form.id_diseno_luna = null;
+        this.form.id_laboratorio_luna = null;
+        this.form.indice = null;
+      }
     },
     showCreateForm() {
       this.resetForm();
       this.showForm = true;
       this.isEditing = false;
+      this.fetchTiposLuna();
+      this.fetchDisenosLuna();
+      this.fetchLaboratoriosLuna();
       new Modal(document.getElementById('stockModal')).show();
     },
     editItem(item) {
@@ -743,6 +829,20 @@ export default {
       this.showForm = true;
       this.isEditing = true;
       this.editingId = item.id;
+      this.fetchTiposLuna();
+      this.fetchDisenosLuna();
+      this.fetchLaboratoriosLuna();
+      if (item.tipo_producto === 'u') {
+        this.form.id_tipo_luna = item.id_tipo_luna;
+        this.form.id_diseno_luna = item.id_diseno_luna;
+        this.form.id_laboratorio_luna = item.id_laboratorio_luna;
+        this.form.indice = item.indice;
+      } else {
+        this.form.id_tipo_luna = null;
+        this.form.id_diseno_luna = null;
+        this.form.id_laboratorio_luna = null;
+        this.form.indice = null;
+      }
       new Modal(document.getElementById('stockModal')).show();
     },
     async submitForm() {
@@ -750,17 +850,21 @@ export default {
       formData.append('descripcion', this.form.descripcion || '');
       formData.append('precio', this.form.precio);
       formData.append('tipo_producto', this.form.tipo_producto);
-      formData.append('id_marca', this.form.id_marca);
-      formData.append('num_stock', this.form.num_stock);
-      
-      // Append new fields
-      if (this.form.codigo) formData.append('codigo', this.form.codigo);
-      if (this.form.genero) formData.append('genero', this.form.genero);
-      if (this.form.id_material) formData.append('id_material', this.form.id_material);
-      if (this.form.fecha_compra) formData.append('fecha_compra', this.form.fecha_compra);
-      
-      if (this.form.imagen instanceof File) {
-        formData.append('imagen', this.form.imagen);
+      if (this.form.tipo_producto === 'u') {
+        formData.append('id_tipo_luna', this.form.id_tipo_luna);
+        formData.append('id_diseno_luna', this.form.id_diseno_luna);
+        formData.append('id_laboratorio_luna', this.form.id_laboratorio_luna);
+        formData.append('indice', this.form.indice);
+      } else {
+        formData.append('id_marca', this.form.id_marca);
+        formData.append('num_stock', this.form.num_stock);
+        if (this.form.codigo) formData.append('codigo', this.form.codigo);
+        if (this.form.genero) formData.append('genero', this.form.genero);
+        if (this.form.id_material) formData.append('id_material', this.form.id_material);
+        if (this.form.fecha_compra) formData.append('fecha_compra', this.form.fecha_compra);
+        if (this.form.imagen instanceof File) {
+          formData.append('imagen', this.form.imagen);
+        }
       }
 
       try {
@@ -811,7 +915,11 @@ export default {
         genero: '',
         id_material: '',
         fecha_compra: '',
-        num_stock: 0
+        num_stock: 0,
+        id_tipo_luna: null,
+        id_diseno_luna: null,
+        id_laboratorio_luna: null,
+        indice: null
       };
       this.imagePreview = null;
       this.isEditing = false;
@@ -1342,6 +1450,9 @@ export default {
     this.fetchMarcas();
     this.fetchMateriales();
     this.fetchProveedores();
+    this.fetchTiposLuna();
+    this.fetchDisenosLuna();
+    this.fetchLaboratoriosLuna();
     
     // Close proveedor dropdown when clicking outside
     document.addEventListener('click', (e) => {
