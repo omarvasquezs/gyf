@@ -69,3 +69,6 @@ Route::post('/comprobantes/{id}/generate', [ComprobanteController::class, 'gener
 Route::get('/comprobantes/{id}/pdf', [ComprobanteController::class, 'generatePdf']);
 
 Route::post('/update-stock', 'App\Http\Controllers\StockController@updateStock');
+Route::apiResource('tipo-lunas', 'TipoLunaController');
+Route::apiResource('diseno-lunas', 'DisenoLunaController');
+Route::apiResource('laboratorios-luna', 'LaboratorioLunaController');
