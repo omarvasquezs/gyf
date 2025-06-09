@@ -10,13 +10,16 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('usuarios')->insert([
-            'username' => 'admin',
-            'name' => 'admin',
-            'password' => Hash::make('12345678'),
-            'role' => 's',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $exists = DB::table('usuarios')->where('username', 'admin')->exists();
+        if (!$exists) {
+            DB::table('usuarios')->insert([
+                'username' => 'admin',
+                'name' => 'admin',
+                'password' => Hash::make('12345678'),
+                'role' => 's',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
