@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import Caja from '../components/Caja.vue';
+import TipoLunasCrud from '../components/TipoLunasCrud.vue';
+import DisenoLunasCrud from '../components/DisenoLunasCrud.vue';
+import LaboratoriosLunaCrud from '../components/LaboratoriosLunaCrud.vue';
 
 const routes = [
     {
@@ -86,6 +89,21 @@ const routes = [
         path: "/marcas",
         name: "Marcas",
         component: () => import("../components/MarcasCrud.vue"),
+    },
+    {
+        path: '/tipo-lunas',
+        name: 'TipoLunasCrud',
+        component: TipoLunasCrud
+    },
+    {
+        path: '/diseno-lunas',
+        name: 'DisenoLunasCrud',
+        component: DisenoLunasCrud
+    },
+    {
+        path: '/laboratorios-luna',
+        name: 'LaboratoriosLunaCrud',
+        component: LaboratoriosLunaCrud
     },
     {
         path: "/:pathMatch(.*)*",

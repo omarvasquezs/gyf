@@ -104,6 +104,9 @@ export default {
             availableMenuItems: [  // Renamed from submenuItems
                 { type: 'link', label: 'Control de stock', icon: 'fas fa-boxes', url: '/control-stock', condition: 'Optica|Optica' },
                 { type: 'link', label: 'Materiales', icon: 'fas fa-cubes', url: '/materiales', condition: 'Optica|Optica' },
+                { type: 'link', label: 'Tipos de Luna', icon: 'fas fa-circle', url: '/tipo-lunas', condition: 'Optica|Optica' },
+                { type: 'link', label: 'Laboratorios de Luna', icon: 'fas fa-flask', url: '/laboratorios-luna', condition: 'Optica|Optica' },
+                { type: 'link', label: 'Diseño de Lunas', icon: 'fas fa-drafting-compass', url: '/diseno-lunas', condition: 'Optica|Optica' },
                 { type: 'link', label: 'Gestionar Pacientes', icon: 'fas fa-users', url: '/pacientes', condition: 'Atención Hospitalaria|Pacientes' },
                 { type: 'link', label: 'Gestionar Médicos', icon: 'fas fa-user-md', url: '/medicos', condition: 'Entidades|Médicos' },
                 { type: 'link', label: 'Administrar Usuarios del Sistema', icon: 'fas fa-user-cog', url: '/usuarios', condition: 'Entidades|Utilitarios' },
