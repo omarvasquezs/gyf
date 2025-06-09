@@ -805,12 +805,17 @@ export default {
         this.form.fecha_compra = '';
         this.form.id_marca = '';
         this.form.imagen = null;
+        // Reset luna-specific fields so placeholder option shows
+        this.form.id_tipo_luna = '';
+        this.form.id_diseno_luna = '';
+        this.form.id_laboratorio_luna = '';
+        this.form.indice = '';
       } else {
-        // Limpiar campos de Lunas
-        this.form.id_tipo_luna = null;
-        this.form.id_diseno_luna = null;
-        this.form.id_laboratorio_luna = null;
-        this.form.indice = null;
+        // User selected non-luna product, clear luna fields
+        this.form.id_tipo_luna = '';
+        this.form.id_diseno_luna = '';
+        this.form.id_laboratorio_luna = '';
+        this.form.indice = '';
       }
     },
     showCreateForm() {
