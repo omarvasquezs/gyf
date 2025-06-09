@@ -209,19 +209,25 @@
                   </div>
                   <div class="col-md-6">
                     <label for="id_tipo_luna" class="form-label">Tipo de Lunas*:</label>
-                    <select v-model="form.id_tipo_luna" id="id_tipo_luna" class="form-control" required>
-                      <option value="" disabled selected>Seleccione tipo de lunas</option>
-                      <option v-for="tipo in tiposLuna" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
-                    </select>
+                    <div class="position-relative select-wrapper">
+                      <select v-model="form.id_tipo_luna" id="id_tipo_luna" class="form-control" required>
+                        <option value="" disabled>Seleccione tipo de lunas</option>
+                        <option v-for="tipo in tiposLuna" :key="tipo.id" :value="tipo.id">{{ tipo.nombre }}</option>
+                      </select>
+                      <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
                   </div>
                 </div>
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="id_diseno_luna" class="form-label">Diseño*:</label>
-                    <select v-model="form.id_diseno_luna" id="id_diseno_luna" class="form-control" required>
-                      <option value="" disabled selected>Seleccione diseño</option>
-                      <option v-for="diseno in disenosLuna" :key="diseno.id" :value="diseno.id">{{ diseno.nombre }}</option>
-                    </select>
+                    <div class="position-relative select-wrapper">
+                      <select v-model="form.id_diseno_luna" id="id_diseno_luna" class="form-control" required>
+                        <option value="" disabled>Seleccione diseño</option>
+                        <option v-for="diseno in disenosLuna" :key="diseno.id" :value="diseno.id">{{ diseno.nombre }}</option>
+                      </select>
+                      <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
                   </div>
                   <div class="col-md-6">
                     <label for="indice" class="form-label">Índice*:</label>
@@ -237,10 +243,13 @@
                 <div class="row mb-3">
                   <div class="col-md-6">
                     <label for="id_laboratorio_luna" class="form-label">Laboratorio*:</label>
-                    <select v-model="form.id_laboratorio_luna" id="id_laboratorio_luna" class="form-control" required>
-                      <option value="" disabled selected>Seleccione laboratorio</option>
-                      <option v-for="lab in laboratoriosLuna" :key="lab.id" :value="lab.id">{{ lab.nombre }}</option>
-                    </select>
+                    <div class="position-relative select-wrapper">
+                      <select v-model="form.id_laboratorio_luna" id="id_laboratorio_luna" class="form-control" required>
+                        <option value="" disabled>Seleccione laboratorio</option>
+                        <option v-for="lab in laboratoriosLuna" :key="lab.id" :value="lab.id">{{ lab.nombre }}</option>
+                      </select>
+                      <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -917,9 +926,9 @@ export default {
         id_material: '',
         fecha_compra: '',
         num_stock: 0,
-        id_tipo_luna: null,
-        id_diseno_luna: null,
-        id_laboratorio_luna: null,
+        id_tipo_luna: '',
+        id_diseno_luna: '',
+        id_laboratorio_luna: '',
         indice: ''
       };
       this.imagePreview = null;
