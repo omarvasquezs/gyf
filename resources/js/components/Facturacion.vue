@@ -250,14 +250,19 @@ export default {
         },
         toggleMesActual() {
             if (this.filters.mesActual) {
-                this.filters.fechaHoyDia = false;
-                const currentDate = new Date();
-                const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
-                const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
-                this.filters.fechaInicio = firstDay;
-                this.filters.fechaFin = lastDay;
+            this.filters.fechaHoyDia = false;
+            // Get Peru time (UTC-5)
+            const now = new Date();
+            // Convert to UTC-5 by subtracting 5 hours
+            const peruTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000) - (5 * 60 * 60 * 1000));
+            const year = peruTime.getFullYear();
+            const month = peruTime.getMonth();
+            const firstDay = new Date(Date.UTC(year, month, 1, 5, 0, 0)); // 5:00 UTC = 00:00 UTC-5
+            const lastDay = new Date(Date.UTC(year, month + 1, 0, 5, 0, 0));
+            this.filters.fechaInicio = firstDay.toISOString().split('T')[0];
+            this.filters.fechaFin = lastDay.toISOString().split('T')[0];
             } else {
-                this.clearDateFilters();
+            this.clearDateFilters();
             }
             this.pagination.currentPage = 1; // Reset to first page when changing filters
             this.fetchComprobantes();
