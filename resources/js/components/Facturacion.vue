@@ -241,9 +241,10 @@ export default {
             const utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
             const peruTime = new Date(utc.getTime() - (5 * 60 * 60 * 1000));
             const today = peruTime.toISOString().split('T')[0];
+            const time = peruTime.toTimeString().split(' ')[0];
             this.filters.fechaInicio = today;
             this.filters.fechaFin = today;
-            console.log('toggleFechaHoyDia: fechaInicio y fechaFin set to', today);
+            console.log(`toggleFechaHoyDia: fechaInicio y fechaFin set to ${today}, hora UTC-5: ${time}`);
             } else {
             this.clearDateFilters();
             console.log('toggleFechaHoyDia: filtros de fecha limpiados');
