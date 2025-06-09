@@ -851,7 +851,7 @@ export default {
         this.form.id_tipo_luna = item.id_tipo_luna;
         this.form.id_diseno_luna = item.id_diseno_luna;
         this.form.id_laboratorio_luna = item.id_laboratorio_luna;
-        this.form.indice = item.indice;
+        this.form.indice = item.indice_luna;
       } else {
         this.form.id_tipo_luna = null;
         this.form.id_diseno_luna = null;
