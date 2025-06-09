@@ -225,10 +225,13 @@
                   </div>
                   <div class="col-md-6">
                     <label for="indice" class="form-label">Índice*:</label>
-                    <select v-model="form.indice" id="indice" class="form-control" required>
-                      <option value="" disabled selected>Seleccione índice</option>
-                      <option v-for="indice in indicesLuna" :key="indice" :value="indice">{{ indice }}</option>
-                    </select>
+                    <div class="position-relative select-wrapper">
+                      <select v-model="form.indice" id="indice" class="form-control" required>
+                        <option value="" disabled selected>Seleccione índice</option>
+                        <option v-for="indice in indicesLuna" :key="indice" :value="indice">{{ indice }}</option>
+                      </select>
+                      <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
                   </div>
                 </div>
                 <div class="row mb-3">
