@@ -227,7 +227,7 @@
                     <label for="indice" class="form-label">Índice*:</label>
                     <div class="position-relative select-wrapper">
                       <select v-model="form.indice" id="indice" class="form-control" required>
-                        <option value="" disabled selected>Seleccione índice</option>
+                        <option value="" disabled>Seleccione índice</option>
                         <option v-for="indice in indicesLuna" :key="indice" :value="indice">{{ indice }}</option>
                       </select>
                       <i class="fas fa-chevron-down select-arrow"></i>
@@ -920,7 +920,7 @@ export default {
         id_tipo_luna: null,
         id_diseno_luna: null,
         id_laboratorio_luna: null,
-        indice: null
+        indice: ''
       };
       this.imagePreview = null;
       this.isEditing = false;
