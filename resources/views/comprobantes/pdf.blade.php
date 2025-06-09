@@ -53,7 +53,7 @@
         <!-- Logo del comprobante -->
 
         <h2 style="margin:0;">G & F oftalmólogas. S.A.C.</h2>
-        <p>Dirección: Av. El Sol esq. Jr. Unión. Villa el Salvador</p>
+        <p>Dirección: Calle almenara 124 interior 201 surquillo</p>
         <p>RUC: 20613814265</p>
         <p>Teléfono: 940 213 168</p>
     </div>
