@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\ProductoComprobante;
 use App\Models\ProductoComprobanteItem;
 use App\Models\Comprobante;
+use App\Models\Stock;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductoComprobanteController extends Controller
 {
@@ -56,6 +59,52 @@ class ProductoComprobanteController extends Controller
             return response()->json(['producto_comprobante' => $productoComprobante, 'message' => 'Producto comprobante and items created successfully']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error creating producto comprobante/items: ' . $e->getMessage()], 500);
+        }
+    }
+    
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $productoComprobante = ProductoComprobante::findOrFail($id);
+            
+            // Check if this producto comprobante has already been processed (has a comprobante_id)
+            if ($productoComprobante->comprobante_id) {
+                return response()->json(['error' => 'No se puede eliminar una solicitud que ya ha sido procesada'], 400);
+            }
+            
+            // Get all items to restore stock quantities
+            $items = ProductoComprobanteItem::where('producto_comprobante_id', $id)->get();
+            
+            // Restore stock quantities
+            foreach ($items as $item) {
+                $stock = Stock::findOrFail($item->stock_id);
+                $stock->num_stock += $item->cantidad; // Add back the quantity
+                $stock->save();
+                
+                Log::info('Stock restored:', [
+                    'stock_id' => $stock->id,
+                    'descripcion' => $stock->descripcion,
+                    'cantidad_restored' => $item->cantidad,
+                    'new_stock' => $stock->num_stock
+                ]);
+            }
+            
+            // Delete the items first (foreign key constraint)
+            ProductoComprobanteItem::where('producto_comprobante_id', $id)->delete();
+            
+            // Delete the producto comprobante
+            $productoComprobante->delete();
+            
+            DB::commit();
+            
+            return response()->json(['message' => 'Solicitud eliminada y stock restaurado correctamente']);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting producto comprobante: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al eliminar la solicitud: ' . $e->getMessage()], 500);
         }
     }
 }

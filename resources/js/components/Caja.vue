@@ -98,22 +98,32 @@
                                 <th>Correo</th>
                                 <th>Monto Total</th>
                                 <th>Registrado en</th>
+                                <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="productoComprobante in productoComprobantes" :key="productoComprobante.id" @click="selectProductoComprobante(productoComprobante.id)" class="clickable-row">
-                                <td class="text-center">
+                            <tr v-for="productoComprobante in productoComprobantes" :key="productoComprobante.id" class="clickable-row">
+                                <td class="text-center" @click="selectProductoComprobante(productoComprobante.id)">
                                     <input 
                                         type="radio" 
                                         v-model="selectedProductoComprobanteId" 
                                         :value="productoComprobante.id"
                                     >
                                 </td>
-                                <td>{{ productoComprobante.nombres }}</td>
-                                <td>{{ productoComprobante.telefono }}</td>
-                                <td>{{ productoComprobante.correo }}</td>
-                                <td>{{ formatCurrency(productoComprobante.monto_total) }}</td>
-                                <td>{{ formatDate(productoComprobante.created_at) }}</td>
+                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.nombres }}</td>
+                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.telefono }}</td>
+                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.correo }}</td>
+                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ formatCurrency(productoComprobante.monto_total) }}</td>
+                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ formatDate(productoComprobante.created_at) }}</td>
+                                <td class="text-center">
+                                    <button 
+                                        @click.stop="deleteProductoComprobante(productoComprobante.id)"
+                                        class="btn btn-sm btn-danger"
+                                        title="Eliminar solicitud"
+                                    >
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -370,6 +380,37 @@ export default {
                 console.error('Error generating comprobante:', error);
                 alert('Error al generar el comprobante: ' + (error.response?.data?.error || error.message));
             }
+        },
+        // Delete a product purchase request and restore stock
+        async deleteProductoComprobante(id) {
+            if (!confirm('¿Está seguro de que desea eliminar esta solicitud? Se restaurará el stock de los productos.')) {
+                return;
+            }
+
+            try {
+                const response = await axios.delete(`/api/productos-comprobante/${id}`);
+                
+                if (response.data.error) {
+                    alert('Error: ' + response.data.error);
+                    return;
+                }
+
+                alert(response.data.message || 'Solicitud eliminada correctamente');
+                
+                // Clear selection if the deleted item was selected
+                if (this.selectedProductoComprobanteId == id) {
+                    this.selectedProductoComprobanteId = '';
+                    this.selectedProductoComprobante = null;
+                    this.productoComprobanteItems = [];
+                }
+                
+                // Refresh the list
+                this.fetchProductoComprobantes();
+                
+            } catch (error) {
+                console.error('Error deleting producto comprobante:', error);
+                alert('Error al eliminar la solicitud: ' + (error.response?.data?.error || error.message));
+            }
         }
     }
 }
@@ -415,7 +456,21 @@ export default {
   cursor: pointer;
 }
 
+.clickable-row:hover {
+  background-color: #f8f9fa;
+}
+
 .pointer {
   cursor: pointer;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-danger:hover {
+  background-color: #dc3545;
+  border-color: #dc3545;
 }
 </style>
