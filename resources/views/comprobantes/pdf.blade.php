@@ -1,3 +1,8 @@
+@php
+    $fontFamily = $config->font_family;
+    $fontSize = $config->font_size;
+    $headerAlignment = $config->header_alignment;
+@endphp
 <!DOCTYPE html>
 <html>
 
@@ -10,12 +15,11 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            font-size: 8px;
+            margin: 0;
+            padding: 0;
         }
 
         .header {
-            text-align: center;
             margin-bottom: 10px;
             border-bottom: 1px dashed #000;
             padding-bottom: 5px;
@@ -48,14 +52,23 @@
     </style>
 </head>
 
-<body>
-    <div class="header">
+<body style="font-family: '{{ $fontFamily }}', monospace; font-size: {{ $fontSize }}px;">
+    <div class="header" style="text-align: {{ $headerAlignment }};">
         <!-- Logo del comprobante -->
+        @if($config->show_logo && $config->logo_path)
+            <img src="{{ public_path('storage/' . $config->logo_path) }}" alt="Logo" style="max-height: 50px; margin-bottom: 10px;">
+        @endif
 
-        <h2 style="margin:0;">G & F oftalmólogas. S.A.C.</h2>
-        <p>Dirección: Calle almenara 124 interior 201 surquillo</p>
-        <p>RUC: 20613814265</p>
-        <p>Teléfono: 940 213 168</p>
+        <h2 style="margin:0;">{{ $config->company_name }}</h2>
+        <p>Dirección: {{ $config->address }}</p>
+        <p>RUC: {{ $config->ruc }}</p>
+        <p>Teléfono: {{ $config->phone }}</p>
+        @if($config->email)
+            <p>Email: {{ $config->email }}</p>
+        @endif
+        @if($config->website)
+            <p>Web: {{ $config->website }}</p>
+        @endif
     </div>
 
     <div class="details" style="text-align: center; padding-bottom: 5px;border-bottom: 1px dashed #000;">

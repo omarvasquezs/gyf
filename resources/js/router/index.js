@@ -106,6 +106,12 @@ const routes = [
         component: LaboratoriosLunaCrud
     },
     {
+        path: "/configuracion-comprobante",
+        name: "ConfiguracionComprobante",
+        component: () => import("../components/ConfiguracionComprobante.vue"),
+        meta: { requiresAuth: true }
+    },
+    {
         path: "/:pathMatch(.*)*",
         component: () => import("../components/NotfoundPage.vue"),
     }

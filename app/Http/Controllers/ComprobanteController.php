@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comprobante;
 use App\Models\Cita;
 use App\Models\ProductoComprobante;
+use App\Models\ComprobanteConfig;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Log;
@@ -191,13 +192,19 @@ class ComprobanteController extends Controller
 
     private function generatePdfDocument($comprobante, $isThermal = false)
     {
+        // Get comprobante configuration
+        $config = ComprobanteConfig::getConfig();
+        
         // Determine the view based on comprobante type
         $view = $comprobante->servicio === 'Producto'
             ? 'comprobantes.productos_pdf'
             : 'comprobantes.pdf';
 
         // First render to measure body height
-        $pdf = PDF::loadView($view, ['comprobante' => $comprobante]);
+        $pdf = PDF::loadView($view, [
+            'comprobante' => $comprobante,
+            'config' => $config
+        ]);
         if ($isThermal) {
             $pdf->setPaper([0, 0, 80, 200], 'portrait');
         } else {

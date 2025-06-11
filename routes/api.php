@@ -72,3 +72,8 @@ Route::post('/update-stock', 'App\Http\Controllers\StockController@updateStock')
 Route::apiResource('tipo-lunas', App\Http\Controllers\TipoLunaController::class);
 Route::apiResource('diseno-lunas', App\Http\Controllers\DisenoLunaController::class);
 Route::apiResource('laboratorios-luna', App\Http\Controllers\LaboratorioLunaController::class);
+
+// Comprobante configuration routes
+Route::get('/comprobante-config', [App\Http\Controllers\ComprobanteConfigController::class, 'index']);
+Route::post('/comprobante-config', [App\Http\Controllers\ComprobanteConfigController::class, 'update']);
+Route::delete('/comprobante-config/logo', [App\Http\Controllers\ComprobanteConfigController::class, 'removeLogo']);

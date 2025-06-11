@@ -135,6 +135,13 @@ export default {
                     icon: 'fas fa-money-bill', 
                     url: '/metodos-pago', 
                     condition: 'Entidades|Utilitarios' 
+                },
+                { 
+                    type: 'link', 
+                    label: 'Configurar comprobante', 
+                    icon: 'fas fa-cog', 
+                    url: '/configuracion-comprobante', 
+                    condition: 'Entidades|Utilitarios' 
                 }
             ]
         };
