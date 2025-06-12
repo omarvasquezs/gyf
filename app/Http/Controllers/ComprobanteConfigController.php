@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\ComprobanteConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ComprobanteConfigController extends Controller
 {
@@ -22,23 +23,29 @@ class ComprobanteConfigController extends Controller
      */
     public function update(Request $request)
     {
-        $request->validate([
-            'company_name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'ruc' => 'required|string|max:20',
-            'phone' => 'required|string|max:20',
-            'email' => 'nullable|string|email|max:255',
-            'website' => 'nullable|string|max:255',
-            'font_family' => 'required|string|max:100',
-            'font_size' => 'required|integer|min:6|max:20',
-            'header_alignment' => 'required|in:left,center,right',
-            'show_logo' => 'boolean',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        $validator = Validator::make($request->all(), [
+            'company_name' => 'nullable|string|max:255',
+            'company_address' => 'nullable|string|max:255',
+            'company_ruc' => 'nullable|string|max:20',
+            'company_phone' => 'nullable|string|max:20',
+            'company_email' => 'nullable|email|max:255',
+            'company_website' => 'nullable|url|max:255',
+            'font_family' => 'nullable|string|max:50',
+            'font_size' => 'nullable|integer|min:1',
+            'header_alignment' => 'nullable|string|in:left,center,right',
+            'show_logo' => 'required|boolean',
+            'details_alignment' => 'nullable|string|in:left,center,right',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         try {
             $config = ComprobanteConfig::getConfig();
-            
+            $data = $request->except('logo');
+
             // Handle logo upload
             if ($request->hasFile('logo')) {
                 // Delete old logo if exists
@@ -49,26 +56,10 @@ class ComprobanteConfigController extends Controller
                 $file = $request->file('logo');
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $path = $file->storeAs('comprobante-logos', $filename, 'public');
-                $config->logo_path = $path;
-                $config->show_logo = true;
+                $data['logo_path'] = $path;
             }
 
-            // Update other fields
-            $config->company_name = $request->company_name;
-            $config->address = $request->address;
-            $config->ruc = $request->ruc;
-            $config->phone = $request->phone;
-            $config->email = $request->email;
-            $config->website = $request->website;
-            $config->font_family = $request->font_family;
-            $config->font_size = $request->font_size;
-            $config->header_alignment = $request->header_alignment;
-            
-            if ($request->has('show_logo')) {
-                $config->show_logo = $request->show_logo;
-            }
-
-            $config->save();
+            $config->update($data);
 
             return response()->json([
                 'message' => 'Configuración actualizada correctamente',

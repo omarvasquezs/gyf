@@ -19,7 +19,8 @@ class ComprobanteConfig extends Model
         'font_size',
         'header_alignment',
         'show_logo',
-        'logo_path'
+        'logo_path',
+        'details_alignment'
     ];
 
     protected $casts = [
@@ -43,7 +44,8 @@ class ComprobanteConfig extends Model
                 'font_family' => 'Courier New',
                 'font_size' => 8,
                 'header_alignment' => 'center',
-                'show_logo' => false
+                'show_logo' => false,
+                'details_alignment' => 'center'
             ]);
         }
         

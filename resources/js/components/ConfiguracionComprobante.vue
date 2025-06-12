@@ -107,7 +107,7 @@
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="font_family" class="form-label">Fuente *</label>
-                  <select v-model="config.font_family" id="font_family" class="form-control" required>
+                  <select v-model="config.font_family" id="font_family" class="form-select" required>
                     <option value="Courier New">Courier New (Monospace)</option>
                     <option value="Arial">Arial</option>
                     <option value="Times New Roman">Times New Roman</option>
@@ -132,12 +132,23 @@
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="header_alignment" class="form-label">Alineación del Encabezado *</label>
-                  <select v-model="config.header_alignment" id="header_alignment" class="form-control" required>
+                  <select v-model="config.header_alignment" id="header_alignment" class="form-select" required>
                     <option value="left">Izquierda</option>
                     <option value="center">Centro</option>
                     <option value="right">Derecha</option>
                   </select>
                 </div>
+                <div class="col-md-6">
+                  <label for="details_alignment" class="form-label">Alineación de Detalles *</label>
+                  <select v-model="config.details_alignment" id="details_alignment" class="form-select" required>
+                    <option value="left">Izquierda</option>
+                    <option value="center">Centro</option>
+                    <option value="right">Derecha</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
                 <div class="col-md-6">
                   <div class="form-check mt-4">
                     <input 
@@ -204,28 +215,49 @@
           <div class="card-body">
             <div 
               class="preview-container border p-3"
-              :style="{
-                fontFamily: config.font_family,
-                fontSize: config.font_size + 'px',
-                textAlign: config.header_alignment
-              }"
             >
-              <div v-if="config.show_logo && config.logo_path" class="mb-2">
-                <img 
-                  :src="`/storage/${config.logo_path}`" 
-                  alt="Logo" 
-                  style="max-height: 40px;"
-                >
+              <div 
+                :style="{
+                  fontFamily: config.font_family,
+                  fontSize: config.font_size + 'px',
+                  textAlign: config.header_alignment
+                }"
+              >
+                <div v-if="config.show_logo && config.logo_path" class="mb-2">
+                  <img 
+                    :src="`/storage/${config.logo_path}`" 
+                    alt="Logo" 
+                    style="max-height: 40px;"
+                  >
+                </div>
+                
+                <h6 class="mb-1" :style="{ fontSize: (config.font_size + 2) + 'px' }">
+                  {{ config.company_name }}
+                </h6>
+                <p class="mb-1">Dirección: {{ config.address }}</p>
+                <p class="mb-1">RUC: {{ config.ruc }}</p>
+                <p class="mb-1">Teléfono: {{ config.phone }}</p>
+                <p v-if="config.email" class="mb-1">Email: {{ config.email }}</p>
+                <p v-if="config.website" class="mb-0">Web: {{ config.website }}</p>
               </div>
-              
-              <h6 class="mb-1" :style="{ fontSize: (config.font_size + 2) + 'px' }">
-                {{ config.company_name }}
-              </h6>
-              <p class="mb-1">Dirección: {{ config.address }}</p>
-              <p class="mb-1">RUC: {{ config.ruc }}</p>
-              <p class="mb-1">Teléfono: {{ config.phone }}</p>
-              <p v-if="config.email" class="mb-1">Email: {{ config.email }}</p>
-              <p v-if="config.website" class="mb-0">Web: {{ config.website }}</p>
+
+              <hr>
+              <!-- Preview for Details Section -->
+              <div 
+                class="preview-details mt-3"
+                :style="{
+                  fontFamily: config.font_family,
+                  fontSize: config.font_size + 'px',
+                  textAlign: config.details_alignment 
+                }"
+              >
+                <h6 class="mb-1" :style="{ fontSize: (config.font_size + 1) + 'px' }">
+                  BOLETA DE VENTA ELECTRÓNICA
+                </h6>
+                <p class="mb-1">B001-00000024</p>
+                <p class="mb-0">Fecha de Emisión: {{ new Date().toLocaleDateString() }}</p>
+              </div>
+
             </div>
           </div>
         </div>
@@ -250,6 +282,7 @@ export default {
         font_family: 'Courier New',
         font_size: 8,
         header_alignment: 'center',
+        details_alignment: 'center', // Added details_alignment
         show_logo: false,
         logo_path: null
       },
@@ -304,7 +337,10 @@ export default {
         
         // Add all config fields
         Object.keys(this.config).forEach(key => {
-          if (key !== 'logo_path' && this.config[key] !== null) {
+          if (key === 'show_logo') {
+            formData.append('show_logo', this.config.show_logo ? '1' : '0');
+          } else if (key !== 'logo_path' && this.config[key] !== null) {
+            // For other keys, use the existing logic
             formData.append(key, this.config[key]);
           }
         });
@@ -333,8 +369,36 @@ export default {
         }, 5000);
 
       } catch (error) {
-        console.error('Error saving configuration:', error);
-        this.errorMessage = error.response?.data?.error || 'Error al guardar la configuración';
+        console.error('Error saving configuration:', error); // Log the full error to the browser console
+
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error('Server Error Response Data:', error.response.data);
+          if (error.response.data && error.response.data.errors) { // Laravel validation errors
+            let validationMessages = [];
+            for (const key in error.response.data.errors) {
+              validationMessages.push(error.response.data.errors[key].join(' '));
+            }
+            this.errorMessage = `Error de validación: ${validationMessages.join('; ')}`;
+          } else if (error.response.data && error.response.data.error) { // Custom error message from server
+            this.errorMessage = error.response.data.error;
+          } else if (error.response.data && error.response.data.message) { // Sometimes Laravel sends a 'message' on error
+            this.errorMessage = error.response.data.message;
+          } else if (typeof error.response.data === 'string' && error.response.data.trim() !== '') { // Plain text error
+            this.errorMessage = error.response.data;
+          } else {
+            this.errorMessage = `Error ${error.response.status}: Error al guardar la configuración. Respuesta inesperada del servidor.`;
+          }
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('Network Error (no response received):', error.request);
+          this.errorMessage = 'Error de red. No se pudo conectar al servidor o no se recibió respuesta.';
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.error('Request Setup Error:', error.message);
+          this.errorMessage = `Error al enviar la solicitud: ${error.message}`;
+        }
       } finally {
         this.loading = false;
       }
@@ -395,5 +459,10 @@ export default {
 
 .img-thumbnail {
   max-width: 100px;
+}
+
+.form-select,
+.form-select option {
+  cursor: pointer;
 }
 </style>

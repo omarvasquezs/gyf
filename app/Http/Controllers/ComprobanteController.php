@@ -237,7 +237,7 @@ class ComprobanteController extends Controller
 
         // Render PDF again using measured height
         unset($pdf);
-        $pdf = PDF::loadView($view, ['comprobante' => $comprobante]);
+        $pdf = PDF::loadView($view, ['comprobante' => $comprobante, 'config' => $config]);
         if ($isThermal) {
             $pdf->setPaper([0, 0, 80, 200], 'portrait');
         } else {

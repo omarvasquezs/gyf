@@ -2,6 +2,8 @@
     $fontFamily = $config->font_family;
     $fontSize = $config->font_size;
     $headerAlignment = $config->header_alignment;
+    $detailsAlignment = $config->details_alignment; // Added this line
+    $fontFamilyCss = $fontFamily === 'Courier New' ? "'Courier New', monospace" : ($fontFamily ? "'$fontFamily', sans-serif" : "monospace");
 @endphp
 <!DOCTYPE html>
 <html>
@@ -78,7 +80,7 @@
     </style>
 </head>
 
-<body style="font-family: '{{ $fontFamily }}', monospace; font-size: {{ $fontSize }}px;">
+<body style="font-family: {!! $fontFamilyCss !!}; font-size: {{ $fontSize }}px;">
     <div class="header" style="text-align: {{ $headerAlignment }};">
         <!-- Logo del comprobante -->
         @if($config->show_logo && $config->logo_path)
@@ -97,7 +99,7 @@
         @endif
     </div>
 
-    <div class="details">
+    <div class="details" style="text-align: {{ $detailsAlignment }};">
         <p>{{ $comprobante->tipo === 'b' ? 'BOLETA' : 'FACTURA' }} DE VENTA ELECTRÓNICA</p>
         <p>{{ $comprobante->serie }}-{{ str_pad($comprobante->correlativo, 8, '0', STR_PAD_LEFT) }}</p>
         <p>Fecha de Emisión: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
