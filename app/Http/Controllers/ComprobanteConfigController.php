@@ -25,7 +25,9 @@ class ComprobanteConfigController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'company_name' => 'nullable|string|max:255',
+            'sub_title' => 'nullable|string|max:255', // Added sub_title validation
             'company_address' => 'nullable|string|max:255',
+            'address_2' => 'nullable|string|max:255', // Added address_2 validation
             'company_ruc' => 'nullable|string|max:20',
             'company_phone' => 'nullable|string|max:20',
             'company_email' => 'nullable|email|max:255',
@@ -62,19 +64,17 @@ class ComprobanteConfigController extends Controller
             $config->update($data);
 
             return response()->json([
-                'message' => 'Configuración actualizada correctamente',
+                'message' => 'Configuración guardada exitosamente.',
                 'config' => $config
             ]);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Error al actualizar la configuración: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['error' => 'Error al guardar la configuración: ' . $e->getMessage()], 500);
         }
     }
 
     /**
-     * Remove logo from configuration.
+     * Remove the logo.
      */
     public function removeLogo()
     {

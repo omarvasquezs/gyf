@@ -10,7 +10,9 @@ class ComprobanteConfig extends Model
     
     protected $fillable = [
         'company_name',
+        'sub_title', // Added sub_title
         'address',
+        'address_2', // Added address_2
         'ruc',
         'phone',
         'email',
@@ -38,7 +40,9 @@ class ComprobanteConfig extends Model
         if (!$config) {
             $config = self::create([
                 'company_name' => 'G & F oftalmólogas. S.A.C.',
+                'sub_title' => null, // Added sub_title
                 'address' => 'Calle almenara 124 interior 201 surquillo',
+                'address_2' => null, // Added address_2
                 'ruc' => '20613814265',
                 'phone' => '940 213 168',
                 'font_family' => 'Courier New',

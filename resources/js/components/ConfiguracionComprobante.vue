@@ -53,6 +53,32 @@
               </div>
 
               <div class="row mb-3">
+                <div class="col-md-12">
+                  <label for="sub_title" class="form-label">Subtítulo</label>
+                  <input 
+                    type="text" 
+                    v-model="config.sub_title" 
+                    id="sub_title" 
+                    class="form-control" 
+                    placeholder="Servicios Oftalmológicos Integrales"
+                  >
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label for="address_2" class="form-label">Segunda Dirección</label>
+                  <input 
+                    type="text" 
+                    v-model="config.address_2" 
+                    id="address_2" 
+                    class="form-control" 
+                    placeholder="Av. Principal 456, Oficina 302, Miraflores"
+                  >
+                </div>
+              </div>
+
+              <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="ruc" class="form-label">RUC *</label>
                   <input 
@@ -235,6 +261,8 @@
                   {{ config.company_name }}
                 </h6>
                 <p class="mb-1">Dirección: {{ config.address }}</p>
+                <p v-if="config.sub_title" class="mb-1">{{ config.sub_title }}</p>
+                <p v-if="config.address_2" class="mb-1">{{ config.address_2 }}</p>
                 <p class="mb-1">RUC: {{ config.ruc }}</p>
                 <p class="mb-1">Teléfono: {{ config.phone }}</p>
                 <p v-if="config.email" class="mb-1">Email: {{ config.email }}</p>
@@ -274,7 +302,9 @@ export default {
     return {
       config: {
         company_name: '',
+        sub_title: '', // Added sub_title
         address: '',
+        address_2: '', // Added address_2
         ruc: '',
         phone: '',
         email: '',

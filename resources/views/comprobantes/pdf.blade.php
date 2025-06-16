@@ -63,6 +63,12 @@
 
         <h2 style="margin:0;">{{ $config->company_name }}</h2>
         <p>Dirección: {{ $config->address }}</p>
+        @if($config->sub_title)
+            <p>{{ $config->sub_title }}</p>
+        @endif
+        @if($config->address_2)
+            <p>{{ $config->address_2 }}</p>
+        @endif
         <p>RUC: {{ $config->ruc }}</p>
         <p>Teléfono: {{ $config->phone }}</p>
         @if($config->email)
