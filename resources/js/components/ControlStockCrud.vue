@@ -123,20 +123,22 @@
               {{ item.num_stock }}
             </span>
           </td>
-          <td>
-            <button @click="viewDetails(item)" class="btn btn-info btn-sm me-2" title="Ver detalles">
-              <i class="fas fa-eye"></i>
-            </button>
-            <button @click="editItem(item)" class="btn btn-warning btn-sm me-2" title="Editar">
-              <i class="fas fa-pencil-alt"></i>
-            </button>
-            <button @click="confirmDelete(item.id)" class="btn btn-danger btn-sm me-2" title="Eliminar">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-            <button @click="agregarProducto(item)" class="btn btn-success btn-sm" title="Agregar al carrito"
-              :disabled="item.num_stock <= 0">
-              <i class="fas fa-cart-plus"></i>
-            </button>
+          <td class="actions-cell-custom">
+            <div class="action-buttons-grid">
+              <button @click="viewDetails(item)" class="btn btn-info btn-sm" title="Ver detalles">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button @click="editItem(item)" class="btn btn-warning btn-sm" title="Editar">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button @click="confirmDelete(item.id)" class="btn btn-danger btn-sm" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button @click="agregarProducto(item)" class="btn btn-success btn-sm" title="Agregar al carrito"
+                :disabled="item.num_stock <= 0">
+                <i class="fas fa-cart-plus"></i>
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -1761,4 +1763,66 @@ export default {
     opacity: 0;
   }
 }
+
+.actions-cell .btn {
+  width: 38px; /* Adjust width as needed for consistency */
+  height: 30px; /* Adjust height to match btn-sm or custom */
+  padding: 0.25rem 0.5rem; /* Default btn-sm padding, adjust if needed */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Ensure icon is vertically centered if text is removed */
+}
+
+.actions-cell .btn i {
+  font-size: 0.875rem; /* Standard FontAwesome size for btn-sm */
+  margin: 0; /* Remove any default margins from icons */
+}
+
+/* New styles for the action buttons grid */
+.actions-cell-custom {
+  /* vertical-align: middle; */ /* Ensures cell content is vertically centered if needed */
+  /* padding: 0.5rem; */ /* Optional: Add padding to the cell itself */
+}
+
+.action-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, auto); /* Two columns, auto-sized based on button content */
+  gap: 4px; /* Space between buttons */
+  justify-content: start; /* Align grid to the start of the cell */
+  /* max-width: 70px; */ /* Approx (32px * 2) + 4px gap */
+}
+
+.action-buttons-grid .btn {
+  width: 30px;  /* Fixed width for buttons */
+  height: 30px; /* Fixed height for buttons */
+  padding: 0.25rem; /* Adjust padding to center icon */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Ensure icon is vertically centered */
+}
+
+.action-buttons-grid .btn i {
+  font-size: 0.8rem; /* Slightly smaller icon if needed for 30x30 button */
+  margin: 0;
+}
+
+/* Remove or comment out the previous attempt if it exists */
+/*
+.actions-cell .btn {
+  width: 38px; 
+  height: 30px; 
+  padding: 0.25rem 0.5rem; 
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; 
+}
+
+.actions-cell .btn i {
+  font-size: 0.875rem; 
+  margin: 0; 
+}
+*/
 </style>
