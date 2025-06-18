@@ -419,13 +419,13 @@ export default {
         },
         // Get the label for the product type based on its code
         getTipoProductoLabel(tipo) {
-            const labels = {
-                'u': 'Unidad',
-                'k': 'Kilogramo',
-                'p': 'Paquete',
-                'l': 'Lote'
-            };
-            return labels[tipo] || 'N/A';
+            switch (tipo) {
+                case 'l': return 'Lentes de Sol';
+                case 'm': return 'Montura';
+                case 'c': return 'Lentes de Contacto';
+                case 'u': return 'Lunas';
+                default: return 'N/A';
+            }
         }
     }
 }
