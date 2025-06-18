@@ -148,7 +148,10 @@
                         <tbody>
                             <tr v-for="item in productoComprobanteItems" :key="item.id">
                                 <td>{{ item.stock ? item.stock.descripcion : 'N/A' }}</td>
-                                <td class="text-center">{{ item.cantidad }}</td>
+                                <td class="text-center">
+                                  <span v-if="item.stock && item.stock.tipo_producto === 'u'">∞</span>
+                                  <span v-else>{{ item.cantidad }}</span>
+                                </td>
                                 <td>{{ formatCurrency(item.precio_unitario) }}</td>
                                 <td>{{ formatCurrency(item.precio_total) }}</td>
                             </tr>

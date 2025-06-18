@@ -123,7 +123,7 @@ class StockController extends Controller
                 // Non-Luna specific fields
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
-                'num_stock' => $validated['num_stock'],
+                'num_stock' => $validated['tipo_producto'] === 'u' ? null : $validated['num_stock'],
             ]);
 
             return response()->json($stock, 201);
@@ -177,7 +177,7 @@ class StockController extends Controller
                 // Non-Luna specific fields
                 'genero' => $validated['tipo_producto'] !== 'u' ? ($validated['genero'] ?? null) : null,
                 'fecha_compra' => $validated['tipo_producto'] !== 'u' ? ($validated['fecha_compra'] ?? null) : null,
-                'num_stock' => $validated['num_stock'],
+                'num_stock' => $validated['tipo_producto'] === 'u' ? null : $validated['num_stock'],
             ];
             if ($request->hasFile('imagen')) {
                 if ($stock->imagen) {
@@ -224,15 +224,16 @@ class StockController extends Controller
             
             foreach ($updates as $update) {
                 $stock = Stock::findOrFail($update['id']);
-                $stock->num_stock = $update['num_stock'];
-                $stock->save();
-                
-                Log::info('Stock updated:', [
-                    'id' => $stock->id,
-                    'descripcion' => $stock->descripcion, // Updated from producto to descripcion
-                    'old_stock' => $stock->getOriginal('num_stock'),
-                    'new_stock' => $stock->num_stock
-                ]);
+                if ($stock->tipo_producto !== 'u') {
+                    $stock->num_stock = $update['num_stock'];
+                    $stock->save();
+                    Log::info('Stock updated:', [
+                        'id' => $stock->id,
+                        'descripcion' => $stock->descripcion, // Updated from producto to descripcion
+                        'old_stock' => $stock->getOriginal('num_stock'),
+                        'new_stock' => $stock->num_stock
+                    ]);
+                }
             }
             
             DB::commit();

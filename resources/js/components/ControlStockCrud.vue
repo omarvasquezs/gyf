@@ -119,8 +119,8 @@
           <td>{{ item.material ? item.material.material : 'N/A' }}</td>
           <td>S/. {{ item.precio }}</td>
           <td class="text-center">
-            <span class="badge rounded-pill" :class="item.num_stock > 0 ? 'bg-success' : 'bg-danger'">
-              {{ item.num_stock }}
+            <span class="badge rounded-pill" :class="item.tipo_producto === 'u' ? 'bg-primary' : (item.num_stock > 0 ? 'bg-success' : 'bg-danger')">
+              {{ item.tipo_producto === 'u' ? '∞' : item.num_stock }}
             </span>
           </td>
           <td class="actions-cell-custom">
@@ -135,7 +135,7 @@
                 <i class="fas fa-trash-alt"></i>
               </button>
               <button @click="agregarProducto(item)" class="btn btn-success btn-sm" title="Agregar al carrito"
-                :disabled="item.num_stock <= 0">
+                :disabled="item.tipo_producto !== 'u' && item.num_stock <= 0">
                 <i class="fas fa-cart-plus"></i>
               </button>
             </div>
@@ -1335,18 +1335,35 @@ export default {
       // Check if the product is already in the cart
       const existingProduct = this.cart.find(item => item.id === producto.id);
 
-      if (existingProduct) {
-        // If the product exists, update the quantity
-        existingProduct.quantity += 1;
+      if (producto.tipo_producto === 'u') {
+        // Lunas: allow unlimited, just increment quantity or add
+        if (existingProduct) {
+          existingProduct.quantity += 1;
+        } else {
+          this.cart.push({ ...producto, quantity: 1 });
+        }
       } else {
-        // If the product doesn't exist, add it to the cart with quantity 1
-        this.cart.push({ ...producto, quantity: 1 });
+        // Other products: check stock
+        if (existingProduct) {
+          if (existingProduct.quantity < producto.num_stock) {
+            existingProduct.quantity += 1;
+          } else {
+            this.alertMessage = 'No hay suficiente stock disponible.';
+            setTimeout(() => { this.alertMessage = ''; }, 2000);
+            return;
+          }
+        } else {
+          if (producto.num_stock > 0) {
+            this.cart.push({ ...producto, quantity: 1 });
+          } else {
+            this.alertMessage = 'No hay stock disponible.';
+            setTimeout(() => { this.alertMessage = ''; }, 2000);
+            return;
+          }
+        }
       }
-
       // Set recently added product ID for animation
       this.recentlyAddedProductId = producto.id;
-      
-      // Show success message
       this.alertMessage = `"${producto.descripcion || 'Producto'}" agregado al carrito`;
       setTimeout(() => {
         this.recentlyAddedProductId = null;
@@ -1457,7 +1474,7 @@ export default {
     validateStockQuantities() {
       // Check if any product quantity exceeds available stock
       for (const item of this.cart) {
-        if (item.quantity > item.num_stock) {
+        if (item.tipo_producto !== 'u' && item.quantity > item.num_stock) {
           return {
             isValid: false,
             message: `El producto "${item.descripcion}" excede el stock disponible. Stock actual: ${item.num_stock}, Cantidad solicitada: ${item.quantity}`
@@ -1466,10 +1483,9 @@ export default {
       }
       return { isValid: true };
     },
-    
     updateStockQuantities() {
       // Create an array of products that need stock updates
-      const stockUpdates = this.cart.map(item => ({
+      const stockUpdates = this.cart.filter(item => item.tipo_producto !== 'u').map(item => ({
         id: item.id,
         num_stock: item.num_stock - item.quantity
       }));
@@ -1513,6 +1529,12 @@ export default {
         return;
       }
       this.applyFilters();
+    },
+    openCart() {
+      this.showCart = true;
+    },
+    closeCart() {
+      this.showCart = false;
     },
   },
   mounted() {

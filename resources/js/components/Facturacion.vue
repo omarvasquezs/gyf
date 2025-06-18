@@ -61,7 +61,7 @@
                             <td>{{ comprobante.tipo === 'b' ? 'Boleta' : 'Factura' }}</td>
                             <td>{{ comprobante.paciente_nombre || 'N/A' }}</td>
                             <td>{{ comprobante.servicio }}</td>
-                            <td>{{ formatCurrency(comprobante.monto_total) }}</td>
+                            <td>{{ comprobante.servicio === 'Lunas' ? '∞' : formatCurrency(comprobante.monto_total) }}</td>
                             <td>{{ getMetodoPago(comprobante.id_metodo_pago) }}</td>
                             <td>{{ formatDate(comprobante.created_at) }}</td>
                             <td>
