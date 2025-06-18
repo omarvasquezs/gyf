@@ -650,8 +650,13 @@
                              style="width:100px;" @change="updatePrecioUnitario(index, $event)">
                     </td>
                     <td>
-                      <input type="number" v-model.number="item.quantity" min="1" class="form-control"
-                        style="width:100px;" @change="updateQuantity(index, $event)">
+                      <template v-if="item.tipo_producto === 'u'">
+                        1
+                      </template>
+                      <template v-else>
+                        <input type="number" v-model.number="item.quantity" min="1" class="form-control"
+                          style="width:100px;" @change="updateQuantity(index, $event)">
+                      </template>
                     </td>
                     <td>S/. {{ (item.precio * item.quantity).toFixed(2) }}</td>
                     <td>
