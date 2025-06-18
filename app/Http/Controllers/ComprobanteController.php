@@ -9,6 +9,7 @@ use App\Models\ComprobanteConfig;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ComprobanteController extends Controller
 {
@@ -278,5 +279,42 @@ class ComprobanteController extends Controller
             ->first();
 
         return $lastComprobante ? $lastComprobante->correlativo + 1 : 1;
+    }
+
+    public function destroy($id)
+    {
+        try {
+            DB::beginTransaction();
+            $comprobante = Comprobante::with('productoComprobante.items')->findOrFail($id);
+
+            // If this comprobante is for a product sale, restore stock
+            if ($comprobante->productoComprobante) {
+                $productoComprobante = $comprobante->productoComprobante;
+                foreach ($productoComprobante->items as $item) {
+                    $stock = $item->stock;
+                    // Only restore stock for non-lunas
+                    if ($stock && $stock->tipo_producto !== 'u') {
+                        $stock->num_stock += $item->cantidad;
+                        $stock->save();
+                    }
+                }
+                // Unlink the producto comprobante from the comprobante
+                $productoComprobante->delete();
+            }
+
+            // If this comprobante is for citas, you may want to revert cita status (optional)
+            // foreach ($comprobante->citas as $cita) {
+            //     $cita->estado = 'pendiente';
+            //     $cita->save();
+            // }
+
+            $comprobante->delete();
+            DB::commit();
+            return response()->json(['message' => 'Comprobante eliminado y stock restaurado correctamente']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting comprobante: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al eliminar el comprobante: ' . $e->getMessage()], 500);
+        }
     }
 }

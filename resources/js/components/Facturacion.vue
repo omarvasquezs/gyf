@@ -66,6 +66,13 @@
                             <td>{{ formatDate(comprobante.created_at) }}</td>
                             <td>
                                 <i class="fas fa-file-pdf pointer" @click="generateComprobante(comprobante.id)"></i>
+                                <button 
+                                    @click.stop="deleteComprobante(comprobante.id)"
+                                    class="btn btn-sm btn-danger ms-2"
+                                    title="Eliminar comprobante"
+                                >
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -310,6 +317,24 @@ export default {
                 alert('Error al generar el comprobante: ' + errorMessage);
             } finally {
                 this.loading = false; // Set loading state to false
+            }
+        },
+        async deleteComprobante(id) {
+            if (!confirm('¿Está seguro de que desea eliminar este comprobante? Se restaurará el stock de los productos.')) {
+                return;
+            }
+            try {
+                const response = await axios.delete(`/api/comprobantes/${id}`);
+                if (response.data.error) {
+                    alert('Error: ' + response.data.error);
+                    return;
+                }
+                alert(response.data.message || 'Comprobante eliminado correctamente');
+                // Refresh the list
+                this.fetchComprobantes();
+            } catch (error) {
+                console.error('Error deleting comprobante:', error);
+                alert('Error al eliminar el comprobante: ' + (error.response?.data?.error || error.message));
             }
         },
         // Add methods to handle success message timeout and dismissal

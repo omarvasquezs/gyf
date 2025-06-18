@@ -77,3 +77,4 @@ Route::apiResource('laboratorios-luna', App\Http\Controllers\LaboratorioLunaCont
 Route::get('/comprobante-config', [App\Http\Controllers\ComprobanteConfigController::class, 'index']);
 Route::post('/comprobante-config', [App\Http\Controllers\ComprobanteConfigController::class, 'update']);
 Route::delete('/comprobante-config/logo', [App\Http\Controllers\ComprobanteConfigController::class, 'removeLogo']);
+Route::delete('/comprobantes/{id}', [ComprobanteController::class, 'destroy']);
