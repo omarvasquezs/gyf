@@ -168,8 +168,14 @@
         @endif
     </div>
 
+    @php
+        $subtotal = $comprobante->monto_total / 1.18;
+        $igv = $comprobante->monto_total - $subtotal;
+    @endphp
     <div class="total">
-        <p><strong>TOTAL: S/ {{ number_format($comprobante->monto_total, 2) }}</strong></p>
+        <p><strong>VALOR DE VENTA: S/ {{ number_format($subtotal, 2) }}</strong></p>
+        <p><strong>IGV (18%): S/ {{ number_format($igv, 2) }}</strong></p>
+        <p><strong>VALOR TOTAL: S/ {{ number_format($comprobante->monto_total, 2) }}</strong></p>
     </div>
 
     <div class="footer">
