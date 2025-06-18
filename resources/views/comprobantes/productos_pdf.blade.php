@@ -138,7 +138,20 @@
                 <tbody>
                     @foreach($comprobante->productoComprobante->items as $item)
                         <tr>
-                            <td style="text-align: left;">{{ $item->stock->descripcion ?? 'N/A' }}</td>
+                            <td style="text-align: left;">
+                                @php
+                                    $tipo = $item->stock->tipo_producto ?? '';
+                                    $tipoLabel = '';
+                                    switch($tipo) {
+                                        case 'l': $tipoLabel = 'Lentes de Sol'; break;
+                                        case 'm': $tipoLabel = 'Montura'; break;
+                                        case 'c': $tipoLabel = 'Lentes de Contacto'; break;
+                                        case 'u': $tipoLabel = 'Lunas'; break;
+                                        default: $tipoLabel = $tipo;
+                                    }
+                                @endphp
+                                {{ $tipoLabel }} - {{ $item->stock->descripcion ?? 'N/A' }}
+                            </td>
                             <td>{{ $item->cantidad }}</td>
                             <td style="text-align: right;">{{ number_format($item->precio * $item->cantidad, 2) }}</td>
                         </tr>
