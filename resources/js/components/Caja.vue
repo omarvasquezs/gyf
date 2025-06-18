@@ -151,7 +151,7 @@
                                 <td>{{ item.stock ? getTipoProductoLabel(item.stock.tipo_producto) : 'N/A' }}</td>
                                 <td>{{ item.stock ? item.stock.descripcion : 'N/A' }}</td>
                                 <td class="text-center">
-                                  <span v-if="item.stock && item.stock.tipo_producto === 'u'">∞</span>
+                                  <span v-if="item.stock && item.stock.tipo_producto === 'u'">N/A</span>
                                   <span v-else>{{ item.cantidad }}</span>
                                 </td>
                                 <td>{{ formatCurrency(item.precio_unitario) }}</td>
