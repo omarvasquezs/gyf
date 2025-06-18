@@ -152,7 +152,12 @@
                                 @endphp
                                 {{ $tipoLabel }} - {{ $item->stock->descripcion ?? 'N/A' }}
                             </td>
-                            <td>{{ $item->cantidad }}</td>
+                            <td>
+                                @php
+                                    $isLuna = isset($item->stock) && $item->stock->tipo_producto === 'u';
+                                @endphp
+                                {{ $isLuna ? 'N/A' : $item->cantidad }}
+                            </td>
                             <td style="text-align: right;">{{ number_format($item->precio * $item->cantidad, 2) }}</td>
                         </tr>
                     @endforeach
