@@ -139,7 +139,8 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Producto</th>
+                                <th>Tipo de Producto</th>
+                                <th>Descripción</th>
                                 <th class="text-center">Cantidad</th>
                                 <th>Precio Unitario</th>
                                 <th>Precio Total</th>
@@ -147,6 +148,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="item in productoComprobanteItems" :key="item.id">
+                                <td>{{ item.stock ? getTipoProductoLabel(item.stock.tipo_producto) : 'N/A' }}</td>
                                 <td>{{ item.stock ? item.stock.descripcion : 'N/A' }}</td>
                                 <td class="text-center">
                                   <span v-if="item.stock && item.stock.tipo_producto === 'u'">∞</span>
@@ -414,6 +416,16 @@ export default {
                 console.error('Error deleting producto comprobante:', error);
                 alert('Error al eliminar la solicitud: ' + (error.response?.data?.error || error.message));
             }
+        },
+        // Get the label for the product type based on its code
+        getTipoProductoLabel(tipo) {
+            const labels = {
+                'u': 'Unidad',
+                'k': 'Kilogramo',
+                'p': 'Paquete',
+                'l': 'Lote'
+            };
+            return labels[tipo] || 'N/A';
         }
     }
 }
