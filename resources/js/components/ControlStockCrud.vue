@@ -4,8 +4,29 @@
       <button @click="goBack" class="btn btn-link">← Regresar</button>
     </div>
     <h2>Gestión de Stock</h2>
-    <button @click="showCreateForm" class="btn btn-primary mb-3">Crear Producto</button>
-    <button @click="resetFilters" class="btn btn-secondary mb-3 ms-2">Resetear Filtros</button>
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <button @click="showCreateForm" class="btn btn-primary">Crear Producto</button>
+      <button @click="resetFilters" class="btn btn-secondary ms-2">Resetear Filtros</button>
+      <div class="import-stock-box ms-2 d-flex align-items-center gap-2 p-2 bg-light rounded shadow-sm">
+        <label class="mb-0 fw-bold" for="importFile"><i class="fas fa-file-import me-1"></i>Importar Stock:</label>
+        <input type="file" ref="importFile" id="importFile" @change="onFileChange" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" class="form-control form-control-sm" style="width:220px;" />
+        <button type="button" class="btn btn-success btn-sm" @click="importStock" :disabled="importing">
+          <i class="fas fa-upload me-1"></i>Importar
+        </button>
+      </div>
+    </div>
+    <div v-if="importResult" class="alert mt-2 alert-dismissible fade show" :class="importResult.errors && importResult.errors.length ? 'alert-warning' : 'alert-success'" role="alert">
+      <div v-if="importResult.imported">Importados: {{ importResult.imported }}</div>
+      <div v-if="importResult && Array.isArray(importResult.errors) && importResult.errors.length">
+        <strong>Errores:</strong>
+        <ul>
+          <li v-for="(err, idx) in importResult.errors" :key="idx">
+            Fila: {{ (err.row && err.row.codigo) ? err.row.codigo : 'N/A' }} - {{ Array.isArray(err.errors) ? err.errors.join(', ') : err.errors }}
+          </li>
+        </ul>
+      </div>
+      <button type="button" class="btn-close" @click="importResult = null" aria-label="Close"></button>
+    </div>
 
     <div v-if="alertMessage" class="alert alert-success alert-dismissible fade show" role="alert">
       {{ alertMessage }}
@@ -767,6 +788,9 @@ export default {
       telefono: '',
       correo: '',
       showTipoProductoDropdown: false,
+      importing: false,
+      importFile: null,
+      importResult: null,
     };
   },
   computed: {
@@ -1541,6 +1565,36 @@ export default {
     closeCart() {
       this.showCart = false;
     },
+    onFileChange() {
+      this.importResult = null;
+      this.alertMessage = '';
+    },
+    async importStock() {
+      if (!this.$refs.importFile.files.length) return;
+      this.importing = true;
+      this.importResult = null;
+      const formData = new FormData();
+      formData.append('file', this.$refs.importFile.files[0]);
+      try {
+        const res = await axios.post('/api/stock/import', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        this.importResult = res.data;
+        this.alertMessage = res.data.message || 'Importación completada.';
+        this.fetchItems();
+      } catch (err) {
+        if (err.response && err.response.data) {
+          this.importResult = err.response.data;
+          this.alertMessage = err.response.data.message || 'Error al importar.';
+        } else {
+          this.importResult = { errors: [err.message] };
+          this.alertMessage = 'Error al importar: ' + err.message;
+        }
+      } finally {
+        this.importing = false;
+        setTimeout(() => { this.alertMessage = ''; }, 7000);
+      }
+    },
   },
   mounted() {
     this.fetchItems();
@@ -1806,12 +1860,6 @@ export default {
   margin: 0; /* Remove any default margins from icons */
 }
 
-/* New styles for the action buttons grid */
-.actions-cell-custom {
-  /* vertical-align: middle; */ /* Ensures cell content is vertically centered if needed */
-  /* padding: 0.5rem; */ /* Optional: Add padding to the cell itself */
-}
-
 .action-buttons-grid {
   display: grid;
   grid-template-columns: repeat(2, auto); /* Two columns, auto-sized based on button content */
@@ -1835,21 +1883,14 @@ export default {
   margin: 0;
 }
 
-/* Remove or comment out the previous attempt if it exists */
-/*
-.actions-cell .btn {
-  width: 38px; 
-  height: 30px; 
-  padding: 0.25rem 0.5rem; 
-  display: inline-flex;
+.import-stock-box {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  line-height: 1; 
+  gap: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-
-.actions-cell .btn i {
-  font-size: 0.875rem; 
-  margin: 0; 
-}
-*/
 </style>

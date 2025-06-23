@@ -78,3 +78,4 @@ Route::get('/comprobante-config', [App\Http\Controllers\ComprobanteConfigControl
 Route::post('/comprobante-config', [App\Http\Controllers\ComprobanteConfigController::class, 'update']);
 Route::delete('/comprobante-config/logo', [App\Http\Controllers\ComprobanteConfigController::class, 'removeLogo']);
 Route::delete('/comprobantes/{id}', [ComprobanteController::class, 'destroy']);
+Route::post('/stock/import', [StockController::class, 'import']);

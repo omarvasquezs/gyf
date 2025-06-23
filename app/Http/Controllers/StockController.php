@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Stock;
+use App\Imports\StockImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Http\UploadedFile;
 
 class StockController extends Controller
 {
@@ -242,6 +245,34 @@ class StockController extends Controller
             DB::rollBack();
             Log::error('Error actualizando stock: ' . $e->getMessage());
             return response()->json(['error' => 'Error al actualizar el stock: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Import stock from Excel/CSV file
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv,txt',
+        ]);
+
+        try {
+            $import = new \App\Imports\StockImport();
+            \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
+            $result = [
+                'imported' => $import->imported,
+                'errors' => $import->errors,
+                'message' => ($import->imported > 0 ? 'Importación completada.' : 'No se importaron registros.')
+            ];
+            return response()->json($result, empty($import->errors) ? 200 : 207);
+        } catch (\Throwable $e) {
+            Log::error('Stock import error: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'imported' => 0,
+                'errors' => [[ 'row' => [], 'errors' => [$e->getMessage()] ]],
+                'message' => 'Error al importar: ' . $e->getMessage()
+            ], 500);
         }
     }
 }
