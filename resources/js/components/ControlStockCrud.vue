@@ -13,6 +13,9 @@
         <button type="button" class="btn btn-success btn-sm" @click="importStock" :disabled="importing">
           <i class="fas fa-upload me-1"></i>Importar
         </button>
+        <button type="button" class="btn btn-info btn-sm" @click="downloadFormat">
+          <i class="fas fa-download me-1"></i>Descargar Formato
+        </button>
       </div>
     </div>
     <div v-if="importResult" class="alert mt-2 alert-dismissible fade show" :class="importResult.errors && importResult.errors.length ? 'alert-warning' : 'alert-success'" role="alert">
@@ -1594,6 +1597,19 @@ export default {
         this.importing = false;
         setTimeout(() => { this.alertMessage = ''; }, 7000);
       }
+    },
+    downloadFormat() {
+      const csvContent = `codigo,descripcion,precio,num_stock,tipo_producto,genero,marca,material,fecha_compra,id_tipo_luna,id_diseno_luna,id_laboratorio_luna,indice\n`;
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'stock_format.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
   },
   mounted() {
