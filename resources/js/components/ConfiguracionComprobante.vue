@@ -134,6 +134,14 @@
                 <div class="col-md-6">
                   <label for="font_family" class="form-label">Fuente *</label>
                   <select v-model="config.font_family" id="font_family" class="form-select" required>
+                    <option value="Aptos Display">Aptos Display</option>
+                    <option value="Aptos">Aptos</option>
+                    <option value="Aptos Black">Aptos Black</option>
+                    <option value="Aptos Light">Aptos Light</option>
+                    <option value="Aptos SemiBold">Aptos SemiBold</option>
+                    <option value="Aptos Mono">Aptos Mono</option>
+                    <option value="Aptos Narrow">Aptos Narrow</option>
+                    <option value="Aptos Serif">Aptos Serif</option>
                     <option value="Courier New">Courier New (Monospace)</option>
                     <option value="Arial">Arial</option>
                     <option value="Times New Roman">Times New Roman</option>
@@ -234,7 +242,7 @@
 
       <!-- Preview -->
       <div class="col-md-4">
-        <div class="card">
+        <div class="card sticky-preview">
           <div class="card-header">
             <h5 class="mb-0">Vista Previa</h5>
           </div>
@@ -244,7 +252,7 @@
             >
               <div 
                 :style="{
-                  fontFamily: config.font_family,
+                  fontFamily: getFontFamily(config.font_family),
                   fontSize: config.font_size + 'px',
                   textAlign: config.header_alignment
                 }"
@@ -257,7 +265,10 @@
                   >
                 </div>
                 
-                <h6 class="mb-1" :style="{ fontSize: (config.font_size + 2) + 'px' }">
+                <h6 class="mb-1" :style="{ 
+                  fontSize: (config.font_size + 2) + 'px',
+                  fontFamily: getFontFamily(config.font_family)
+                }">
                   {{ config.company_name }}
                 </h6>
                 <p class="mb-1">Dirección: {{ config.address }}</p>
@@ -274,12 +285,15 @@
               <div 
                 class="preview-details mt-3"
                 :style="{
-                  fontFamily: config.font_family,
+                  fontFamily: getFontFamily(config.font_family),
                   fontSize: config.font_size + 'px',
                   textAlign: config.details_alignment 
                 }"
               >
-                <h6 class="mb-1" :style="{ fontSize: (config.font_size + 1) + 'px' }">
+                <h6 class="mb-1" :style="{ 
+                  fontSize: (config.font_size + 1) + 'px',
+                  fontFamily: getFontFamily(config.font_family)
+                }">
                   BOLETA DE VENTA ELECTRÓNICA
                 </h6>
                 <p class="mb-1">B001-00000024</p>
@@ -309,7 +323,7 @@ export default {
         phone: '',
         email: '',
         website: '',
-        font_family: 'Courier New',
+        font_family: 'Aptos Display',
         font_size: 8,
         header_alignment: 'center',
         details_alignment: 'center', // Added details_alignment
@@ -326,6 +340,27 @@ export default {
     this.loadConfiguration();
   },
   methods: {
+    getFontFamily(fontName) {
+      // Map font names to proper CSS font families with fallbacks
+      const fontMap = {
+        'Aptos Display': '"Aptos Display", "Aptos", Arial, sans-serif',
+        'Aptos': '"Aptos", Arial, sans-serif',
+        'Aptos Black': '"Aptos Black", "Aptos", Arial, sans-serif',
+        'Aptos Light': '"Aptos Light", "Aptos", Arial, sans-serif',
+        'Aptos SemiBold': '"Aptos SemiBold", "Aptos", Arial, sans-serif',
+        'Aptos Mono': '"Aptos Mono", "Courier New", monospace',
+        'Aptos Narrow': '"Aptos Narrow", "Aptos", Arial, sans-serif',
+        'Aptos Serif': '"Aptos Serif", "Times New Roman", serif',
+        'Courier New': '"Courier New", monospace',
+        'Arial': 'Arial, sans-serif',
+        'Times New Roman': '"Times New Roman", serif',
+        'Helvetica': 'Helvetica, Arial, sans-serif',
+        'Georgia': 'Georgia, serif'
+      };
+      
+      return fontMap[fontName] || `"${fontName}", Arial, sans-serif`;
+    },
+
     async loadConfiguration() {
       try {
         const response = await axios.get('/api/comprobante-config');
@@ -494,5 +529,70 @@ export default {
 .form-select,
 .form-select option {
   cursor: pointer;
+}
+
+.sticky-preview {
+  position: sticky;
+  top: 100px; /* Increased to avoid overlap with top menu */
+  z-index: 10;
+  max-height: calc(100vh - 120px); /* Adjusted accordingly */
+  overflow-y: auto;
+}
+
+/* Ensure Aptos fonts are loaded properly */
+.preview-container * {
+  -webkit-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern" 1;
+  text-rendering: optimizeLegibility;
+  font-display: swap; /* Ensures faster font loading */
+}
+
+/* Force font loading */
+@font-face {
+  font-family: 'Aptos Display';
+  src: url('/fonts/Aptos-Display.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Black';
+  src: url('/fonts/Aptos-Black.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Light';
+  src: url('/fonts/Aptos-Light.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos SemiBold';
+  src: url('/fonts/Aptos-SemiBold.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Mono';
+  src: url('/fonts/Aptos-Mono.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Narrow';
+  src: url('/fonts/Aptos-Narrow.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos Serif';
+  src: url('/fonts/Aptos-Serif.ttf') format('truetype');
+  font-display: swap;
 }
 </style>
