@@ -15,12 +15,13 @@
     <title>Comprobante {{ $comprobante->serie }}-{{ str_pad($comprobante->correlativo, 8, '0', STR_PAD_LEFT) }}</title>
     <style>
         @page {
-            margin: 1.1rem;
+            margin: 0.5rem 0.3rem;
         }
 
         body {
             margin: 0;
             padding: 0;
+            width: 100%;
         }
 
         .header {
