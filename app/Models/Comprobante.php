@@ -11,6 +11,8 @@ class Comprobante extends Model
         'serie',          // Changed from numero_serie
         'correlativo',    // Changed from numero_correlativo
         'monto_total',
+        'numero_ruc',
+        'razon_social',
         'id_metodo_pago' // Added this field
     ];
 

@@ -91,6 +91,14 @@ class ComprobanteController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validate RUC and Razón Social for Factura
+            if ($request->tipo === 'f') {
+                $request->validate([
+                    'numero_ruc' => 'required|string|regex:/^[0-9]{11}$/',
+                    'razon_social' => 'required|string|max:255',
+                ]);
+            }
+
             $monto_total = 0;
 
             if ($request->has('citas')) {
@@ -106,15 +114,21 @@ class ComprobanteController extends Controller
                 $monto_total = $productoComprobante->monto_total;
             }
 
-            $comprobante = Comprobante::create([
+            $comprobanteData = [
                 'tipo' => $request->tipo,
                 'serie' => $request->tipo === 'b' ? 'B001' : 'F001',
                 'correlativo' => $this->getNextCorrelativo($request->tipo),
                 'id_metodo_pago' => $request->id_metodo_pago,
-                'paciente_id' => $request->paciente_id ?? null,
                 'monto_total' => $monto_total,
-                'pagado' => true
-            ]);
+            ];
+
+            // Add RUC and Razón Social for Factura
+            if ($request->tipo === 'f') {
+                $comprobanteData['numero_ruc'] = $request->numero_ruc;
+                $comprobanteData['razon_social'] = $request->razon_social;
+            }
+
+            $comprobante = Comprobante::create($comprobanteData);
 
             if ($request->has('citas')) {
                 foreach ($citas as $cita) {

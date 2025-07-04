@@ -121,6 +121,10 @@
                     <p><strong>DNI/CE:</strong> {{ $comprobante->productoComprobante->dni_ce }}</p>
                 @endif
                 <p><strong>Teléfono:</strong> {{ $comprobante->productoComprobante->telefono }}</p>
+                @if($comprobante->tipo === 'f' && $comprobante->numero_ruc)
+                    <p><strong>RUC:</strong> {{ $comprobante->numero_ruc }}</p>
+                    <p><strong>Razón Social:</strong> {{ $comprobante->razon_social }}</p>
+                @endif
             </div>
         @else
             <p>Información del cliente no disponible.</p>

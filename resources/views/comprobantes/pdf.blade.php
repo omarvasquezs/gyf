@@ -99,6 +99,10 @@
                     <p><strong>Paciente:</strong> {{ optional($comprobante->citas->first()->paciente)->nombres ?? 'N/A' }}
                         {{ optional($comprobante->citas->first()->paciente)->ap_paterno ?? '' }}
                         {{ optional($comprobante->citas->first()->paciente)->ap_materno ?? '' }}</p>
+                    @if($comprobante->tipo === 'f' && $comprobante->numero_ruc)
+                        <p><strong>RUC:</strong> {{ $comprobante->numero_ruc }}</p>
+                        <p><strong>Razón Social:</strong> {{ $comprobante->razon_social }}</p>
+                    @endif
                     <p><strong>Tipo de Cita:</strong> {{ optional($cita->tipoCita)->tipo_cita ?? 'N/A' }}</p>
                     <p><strong>Médico:</strong> {{ $cita->medico->nombres ?? 'N/A' }} {{ $cita->medico->ap_paterno ?? '' }}
                         {{ $cita->medico->ap_materno ?? '' }}</p>

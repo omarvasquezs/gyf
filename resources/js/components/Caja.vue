@@ -177,7 +177,7 @@
                     <div class="col-md-6">
                         <div class="form-group position-relative select-wrapper">
                             <label>Tipo de Comprobante</label>
-                            <select v-model="comprobante.tipo" class="form-control pointer">
+                            <select v-model="comprobante.tipo" class="form-control pointer" @change="onTipoComprobanteChange">
                                 <option value="b" class="pointer">Boleta</option>
                                 <option value="f" class="pointer">Factura</option>
                             </select>
@@ -197,6 +197,40 @@
                                 </option>
                             </select>
                             <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RUC and Razón Social fields - only show when Factura is selected -->
+                <div v-if="comprobante.tipo === 'f'" class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="numero_ruc">N° de RUC <span class="text-danger">*</span></label>
+                            <input 
+                                type="text" 
+                                v-model="comprobante.numero_ruc" 
+                                class="form-control" 
+                                id="numero_ruc" 
+                                placeholder="Ingrese número de RUC"
+                                pattern="[0-9]{11}"
+                                maxlength="11"
+                                @input="validateRuc"
+                                required
+                            >
+                            <div v-if="rucError" class="text-danger small mt-1">{{ rucError }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="razon_social">Razón Social <span class="text-danger">*</span></label>
+                            <input 
+                                type="text" 
+                                v-model="comprobante.razon_social" 
+                                class="form-control" 
+                                id="razon_social" 
+                                placeholder="Ingrese razón social"
+                                required
+                            >
                         </div>
                     </div>
                 </div>
@@ -228,12 +262,15 @@ export default {
             metodosPago: [], // List of payment methods
             comprobante: {
                 tipo: 'b', // Type of comprobante (boleta or factura)
+                numero_ruc: '',
+                razon_social: '',
                 id_metodo_pago: '' // Selected payment method ID
             },
             productoComprobantes: [], // List of product purchase requests
             selectedProductoComprobanteId: '', // ID of the selected product purchase request
             selectedProductoComprobante: null, // Details of the selected product purchase request
-            productoComprobanteItems: [] // List of items in the selected product purchase request
+            productoComprobanteItems: [], // List of items in the selected product purchase request
+            rucError: '' // RUC validation error message
         }
     },
     computed: {
@@ -354,19 +391,44 @@ export default {
                 return;
             }
 
+            // Validate RUC and Razón Social for Factura
+            if (this.comprobante.tipo === 'f') {
+                if (!this.comprobante.numero_ruc || this.comprobante.numero_ruc.trim() === '') {
+                    alert('El número de RUC es obligatorio para facturas.');
+                    return;
+                }
+                if (!this.comprobante.razon_social || this.comprobante.razon_social.trim() === '') {
+                    alert('La razón social es obligatoria para facturas.');
+                    return;
+                }
+                if (!/^[0-9]{11}$/.test(this.comprobante.numero_ruc)) {
+                    alert('El número de RUC debe tener exactamente 11 dígitos.');
+                    return;
+                }
+            }
+
             try {
                 let response;
+                const comprobanteData = {
+                    tipo: this.comprobante.tipo,
+                    id_metodo_pago: this.comprobante.id_metodo_pago
+                };
+
+                // Add RUC and Razón Social if it's a factura
+                if (this.comprobante.tipo === 'f') {
+                    comprobanteData.numero_ruc = this.comprobante.numero_ruc;
+                    comprobanteData.razon_social = this.comprobante.razon_social;
+                }
+
                 if (this.comprobanteType === 'citas') {
                     response = await axios.post('/api/comprobantes', {
-                        tipo: this.comprobante.tipo,
-                        id_metodo_pago: this.comprobante.id_metodo_pago,
+                        ...comprobanteData,
                         citas: [this.selectedAppointmentId],
                         paciente_id: this.selectedPatient.id
                     });
                 } else if (this.comprobanteType === 'productos') {
                     response = await axios.post('/api/comprobantes', {
-                        tipo: this.comprobante.tipo,
-                        id_metodo_pago: this.comprobante.id_metodo_pago,
+                        ...comprobanteData,
                         productos_comprobante_id: this.selectedProductoComprobanteId
                     });
                 }
@@ -425,6 +487,25 @@ export default {
                 case 'c': return 'Lentes de Contacto';
                 case 'u': return 'Lunas';
                 default: return 'N/A';
+            }
+        },
+
+        // Handle tipo de comprobante change
+        onTipoComprobanteChange() {
+            // Clear RUC and Razón Social fields when switching from Factura to Boleta
+            if (this.comprobante.tipo === 'b') {
+                this.comprobante.numero_ruc = '';
+                this.comprobante.razon_social = '';
+                this.rucError = '';
+            }
+        },
+
+        // Validate RUC format (11 digits)
+        validateRuc() {
+            if (this.comprobante.numero_ruc && !/^[0-9]{11}$/.test(this.comprobante.numero_ruc)) {
+                this.rucError = 'El RUC debe tener exactamente 11 dígitos';
+            } else {
+                this.rucError = '';
             }
         }
     }
