@@ -638,6 +638,20 @@
                 <input type="text" v-model="nombres" class="form-control" id="nombres" placeholder="Ingrese nombres">
               </div>
               <div class="mb-3">
+                <label for="dni_ce" class="form-label">DNI/CE</label>
+                <input 
+                  type="text" 
+                  v-model="dni_ce" 
+                  class="form-control" 
+                  id="dni_ce" 
+                  placeholder="Ingrese DNI/CE (8-9 dígitos)"
+                  pattern="[0-9]{8,9}"
+                  maxlength="9"
+                  @input="validateDniCe"
+                >
+                <div v-if="dniCeError" class="text-danger small mt-1">{{ dniCeError }}</div>
+              </div>
+              <div class="mb-3">
                 <label for="telefono" class="form-label">Teléfono</label>
                 <input type="text" v-model="telefono" class="form-control" id="telefono" placeholder="Ingrese teléfono">
               </div>
@@ -784,7 +798,9 @@ export default {
       selectedItems: [],
       recentlyAddedProductId: null,
       nombres: '',
+      dni_ce: '',
       telefono: '',
+      dniCeError: '',
       showTipoProductoDropdown: false,
       importing: false,
       importFile: null,
@@ -1464,6 +1480,7 @@ export default {
       const montoTotal = this.cart.reduce((total, item) => total + (item.quantity * item.precio), 0);
       const productoComprobantePayload = {
         nombres: this.nombres,
+        dni_ce: this.dni_ce,
         telefono: this.telefono,
         monto_total: parseFloat(montoTotal.toFixed(2)),
         items: this.cart.map(item => ({
@@ -1481,7 +1498,9 @@ export default {
           
           // Reset form fields
           this.nombres = '';
+          this.dni_ce = '';
           this.telefono = '';
+          this.dniCeError = '';
           
           this.cart = [];
           this.selectedItems = [];
@@ -1606,6 +1625,14 @@ export default {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    },
+    
+    validateDniCe() {
+      if (this.dni_ce && !/^[0-9]{8,9}$/.test(this.dni_ce)) {
+        this.dniCeError = 'El DNI/CE debe contener entre 8 y 9 dígitos';
+      } else {
+        this.dniCeError = '';
+      }
     },
   },
   mounted() {

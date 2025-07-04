@@ -117,6 +117,9 @@
         @if($comprobante->productoComprobante)
             <div>
                 <p><strong>Nombres:</strong> {{ $comprobante->productoComprobante->nombres }}</p>
+                @if($comprobante->productoComprobante->dni_ce)
+                    <p><strong>DNI/CE:</strong> {{ $comprobante->productoComprobante->dni_ce }}</p>
+                @endif
                 <p><strong>Teléfono:</strong> {{ $comprobante->productoComprobante->telefono }}</p>
             </div>
         @else

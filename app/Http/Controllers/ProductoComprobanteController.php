@@ -29,6 +29,7 @@ class ProductoComprobanteController extends Controller
     {
         $request->validate([
             'nombres' => 'required|string',
+            'dni_ce' => 'nullable|string|regex:/^[0-9]{8,9}$/',
             'telefono' => 'nullable|string', // Changed 'required' to 'nullable'
             'monto_total' => 'required|numeric|min:0',
             'items' => 'required|array|min:1',
@@ -40,6 +41,7 @@ class ProductoComprobanteController extends Controller
         try {
             $productoComprobante = ProductoComprobante::create([
                 'nombres' => $request->nombres,
+                'dni_ce' => $request->dni_ce,
                 'telefono' => $request->telefono,
                 'monto_total' => $request->monto_total,
                 'comprobante_id' => null

@@ -11,6 +11,7 @@ class ProductoComprobante extends Model
     protected $fillable = [
         'comprobante_id',
         'nombres',
+        'dni_ce',
         'telefono',
         'monto_total'
     ];
