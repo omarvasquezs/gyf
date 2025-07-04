@@ -12,7 +12,6 @@ class ProductoComprobante extends Model
         'comprobante_id',
         'nombres',
         'telefono',
-        'correo',
         'monto_total'
     ];
 

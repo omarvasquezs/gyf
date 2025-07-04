@@ -641,10 +641,6 @@
                 <label for="telefono" class="form-label">Teléfono</label>
                 <input type="text" v-model="telefono" class="form-control" id="telefono" placeholder="Ingrese teléfono">
               </div>
-              <div class="mb-3">
-                <label for="correo" class="form-label">Correo</label>
-                <input type="email" v-model="correo" class="form-control" id="correo" placeholder="Ingrese correo">
-              </div>
               
               <!-- Total Amount Display -->
               <div class="mb-3">
@@ -789,7 +785,6 @@ export default {
       recentlyAddedProductId: null,
       nombres: '',
       telefono: '',
-      correo: '',
       showTipoProductoDropdown: false,
       importing: false,
       importFile: null,
@@ -1470,7 +1465,6 @@ export default {
       const productoComprobantePayload = {
         nombres: this.nombres,
         telefono: this.telefono,
-        correo: this.correo,
         monto_total: parseFloat(montoTotal.toFixed(2)),
         items: this.cart.map(item => ({
           stock_id: item.id,
@@ -1488,7 +1482,6 @@ export default {
           // Reset form fields
           this.nombres = '';
           this.telefono = '';
-          this.correo = '';
           
           this.cart = [];
           this.selectedItems = [];

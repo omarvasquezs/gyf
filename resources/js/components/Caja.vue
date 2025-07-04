@@ -95,7 +95,6 @@
                                 <th class="text-center">Seleccionar</th>
                                 <th>Nombres</th>
                                 <th>Teléfono</th>
-                                <th>Correo</th>
                                 <th>Monto Total</th>
                                 <th>Registrado en</th>
                                 <th class="text-center">Acciones</th>
@@ -112,7 +111,6 @@
                                 </td>
                                 <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.nombres }}</td>
                                 <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.telefono }}</td>
-                                <td @click="selectProductoComprobante(productoComprobante.id)">{{ productoComprobante.correo }}</td>
                                 <td @click="selectProductoComprobante(productoComprobante.id)">{{ formatCurrency(productoComprobante.monto_total) }}</td>
                                 <td @click="selectProductoComprobante(productoComprobante.id)">{{ formatDate(productoComprobante.created_at) }}</td>
                                 <td class="text-center">

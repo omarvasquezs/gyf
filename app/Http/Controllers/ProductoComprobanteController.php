@@ -30,7 +30,6 @@ class ProductoComprobanteController extends Controller
         $request->validate([
             'nombres' => 'required|string',
             'telefono' => 'nullable|string', // Changed 'required' to 'nullable'
-            'correo' => 'nullable|string|email',
             'monto_total' => 'required|numeric|min:0',
             'items' => 'required|array|min:1',
             'items.*.stock_id' => 'required|integer|exists:stock,id',
@@ -42,7 +41,6 @@ class ProductoComprobanteController extends Controller
             $productoComprobante = ProductoComprobante::create([
                 'nombres' => $request->nombres,
                 'telefono' => $request->telefono,
-                'correo' => $request->correo,
                 'monto_total' => $request->monto_total,
                 'comprobante_id' => null
             ]);

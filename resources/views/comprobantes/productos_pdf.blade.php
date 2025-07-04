@@ -118,7 +118,6 @@
             <div>
                 <p><strong>Nombres:</strong> {{ $comprobante->productoComprobante->nombres }}</p>
                 <p><strong>Teléfono:</strong> {{ $comprobante->productoComprobante->telefono }}</p>
-                <p><strong>Correo:</strong> {{ $comprobante->productoComprobante->correo }}</p>
             </div>
         @else
             <p>Información del cliente no disponible.</p>
